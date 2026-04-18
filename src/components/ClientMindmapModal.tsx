@@ -39,7 +39,7 @@ function ClientCardFull({ client }: { client: Client }) {
       <dl className="mt-6 space-y-3.5 text-sm">
         <Row icon={<Briefcase className="h-4 w-4" />} label="AUM" value={client.aum} />
         <Row icon={<Tag className="h-4 w-4" />} label="Profil de risque" value={client.riskProfile} />
-        <Row icon={<Calendar className="h-4 w-4" />} label="Client depuis" value={client.joined} />
+        <Row icon={<Calendar className="h-4 w-4" />} label="Conseiller" value={client.rm} />
         <Row icon={<Mail className="h-4 w-4" />} label="Email" value={client.email} />
         <Row icon={<Phone className="h-4 w-4" />} label="Téléphone" value={client.phone} />
       </dl>
@@ -51,9 +51,20 @@ function ClientCardFull({ client }: { client: Client }) {
       </div>
 
       <div className="mt-5 border-t border-border pt-4">
-        <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Notes existantes</p>
-        <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-          {client.notes.map((n, i) => (<li key={i}>· {n}</li>))}
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+          Portefeuille · {client.contracts.length} contrats
+        </p>
+        <ul className="mt-3 space-y-1.5 text-sm text-muted-foreground">
+          {client.contracts.map((k) => (
+            <li key={k.id} className="flex justify-between gap-2">
+              <span className="truncate">· {k.label}</span>
+              {k.balance != null && (
+                <span className="shrink-0 font-medium text-foreground">
+                  {k.balance >= 1000 ? `${(k.balance / 1000).toFixed(0)} k€` : `${k.balance} €`}
+                </span>
+              )}
+            </li>
+          ))}
         </ul>
       </div>
     </div>

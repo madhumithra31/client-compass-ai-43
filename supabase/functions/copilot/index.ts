@@ -4,10 +4,11 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const CLIENT_CONTEXT = `Client: Mme Camille Laurent (CL-2024-0481)
-Segment: Banque Privée · AUM €4.82M · Profil: Équilibré
-Préférences: ESG/ISR fort, immobilier, transmission patrimoniale (2 enfants Léa & Théo)
-Conseiller: Antoine Mercier`;
+const CLIENT_CONTEXT = `Client: Dr. Hélène Dufour (CLI00005)
+Segment: Wealth Management · Profil: Dynamique
+Profession libérale (médecin), patrimoine diversifié, intérêt ESG, projet immobilier locatif
+Portefeuille: AV multisupports, PEA, PER, CTO, crédit immo en cours, Carte Visa Infinite
+Conseiller: Karim Haddad`;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
