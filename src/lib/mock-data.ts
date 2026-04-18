@@ -3826,6 +3826,13 @@ export const clients: Record<string, Client> = {
 
 export const currentClient: Client = clients["CLI00005"];
 
+// Ordered list for client switchers / lookup tables.
+export const clientList: Client[] = Object.values(clients).sort((a, b) =>
+  a.lastName.localeCompare(b.lastName, "fr"),
+);
+
+export const defaultClientId = "CLI00005";
+
 export const otherLiveMeetings = [
     {
       "id": "m1",
