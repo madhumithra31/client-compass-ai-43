@@ -169,6 +169,7 @@ function Meeting() {
             <span className="hidden text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground lg:inline">
               · Rendez-vous live
             </span>
+            <Link to="/portfolio" className="hidden text-xs text-muted-foreground hover:text-foreground lg:inline">Portfolio</Link>
           </div>
           <div className="flex items-center gap-3">
             <Select
