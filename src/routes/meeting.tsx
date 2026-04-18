@@ -60,36 +60,44 @@ function Meeting() {
       setSentimentSeries((s) => [...s, { t: elapsed, v: next.sentiment }]);
 
       // Trigger alerts based on content
-      if (next.text.includes("680 000")) {
+      if (next.text.includes("45 000") || next.text.toLowerCase().includes("complément de revenus")) {
         addAlert({
           id: crypto.randomUUID(),
           type: "change",
-          title: "Liquidité disponible détectée",
-          detail: "Cession immobilière Lyon — €680 000 nets à allouer.",
+          title: "Revenus exceptionnels détectés",
+          detail: "Complément d'honoraires +45 000 € — fenêtre d'optimisation fiscale (PER).",
         });
       }
-      if (next.text.toLowerCase().includes("inquiète") || next.text.toLowerCase().includes("peur")) {
+      if (next.text.toLowerCase().includes("inquiet") || next.text.toLowerCase().includes("inquiète") || next.text.toLowerCase().includes("volatilité")) {
         addAlert({
           id: crypto.randomUUID(),
           type: "risk",
           title: "Signal d'inquiétude client",
-          detail: "Sentiment négatif sur volatilité marchés. Adapter le discours.",
+          detail: "Volatilité marchés sur l'AV (37% UC). Proposer arbitrage progressif.",
         });
       }
-      if (next.text.includes("camille.laurent@me.com")) {
+      if (next.text.includes("marc.girard@me.com")) {
         addAlert({
           id: crypto.randomUUID(),
           type: "change",
           title: "Mise à jour de coordonnées",
-          detail: "Nouvel e-mail principal : camille.laurent@me.com — à confirmer dans le CRM.",
+          detail: "Nouvel e-mail principal : marc.girard@me.com — à confirmer dans le CRM.",
         });
       }
-      if (next.text.toLowerCase().includes("mariage") || next.text.toLowerCase().includes("transmission")) {
+      if (next.text.toLowerCase().includes("locatif") || next.text.includes("500 000")) {
         addAlert({
           id: crypto.randomUUID(),
           type: "info",
-          title: "Évènement de vie",
-          detail: "Mariage de Léa en septembre — opportunité donation-partage.",
+          title: "Projet patrimonial actif",
+          detail: "Investissement locatif 500 k€ Nantes — lancer simulation prêt in fine.",
+        });
+      }
+      if (next.text.toLowerCase().includes("léa") || next.text.toLowerCase().includes("tom") || next.text.toLowerCase().includes("enfants")) {
+        addAlert({
+          id: crypto.randomUUID(),
+          type: "info",
+          title: "Transmission · enfants",
+          detail: "Léa (9) & Tom (5) — donation 31 865 €/enfant en franchise de droits.",
         });
       }
       idxRef.current += 1;
