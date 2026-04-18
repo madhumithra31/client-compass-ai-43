@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { supabase } from "@/integrations/supabase/client";
+import { askAgent, quickAgent } from "@/lib/copilot-api";
 import { toast } from "sonner";
 import {
   Sparkles, Send, Loader2, Check, X, MessageSquare, Lightbulb,
@@ -27,7 +27,7 @@ const TYPE_META: Record<Suggestion["type"], { label: string; Icon: React.Compone
   action:        { label: "Action de suivi",      Icon: ListTodo },
 };
 
-export function CopilotPanel({ transcript, recording }: { transcript: string; recording: boolean }) {
+export function CopilotPanel({ transcript, recording, clientId, clientName }: { transcript: string; recording: boolean; clientId?: string; clientName?: string }) {
   const [tab, setTab] = useState<"suggest" | "ask">("suggest");
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [loadingSuggest, setLoadingSuggest] = useState(false);
@@ -50,11 +50,32 @@ export function CopilotPanel({ transcript, recording }: { transcript: string; re
   async function fetchSuggestions() {
     setLoadingSuggest(true);
     try {
-      const { data, error } = await supabase.functions.invoke("copilot", {
-        body: { mode: "suggest", transcript },
+      const raw = await quickAgent({
+        keyword_id: "live_suggestions",
+        client_id: clientId,
+        client_name: clientName,
       });
-      if (error) throw error;
-      const incoming = (data?.suggestions ?? []) as Array<Omit<Suggestion, "id" | "status" | "ts">>;
+      // Try to parse Render `response` as a JSON array of structured suggestions.
+      // Fallback to a single "talking_point" card if it's plain text.
+      let incoming: Array<Omit<Suggestion, "id" | "status" | "ts">> = [];
+      try {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          incoming = parsed.filter(
+            (s) => s && typeof s.title === "string" && typeof s.body === "string",
+          );
+        }
+      } catch {
+        // not JSON — treat as single suggestion
+      }
+      if (incoming.length === 0 && raw.trim()) {
+        incoming = [{
+          type: "talking_point",
+          priority: "medium",
+          title: "Suggestion live",
+          body: raw.trim(),
+        }];
+      }
       setSuggestions((prev) => {
         const activeIds = new Set(prev.filter((s) => s.status !== "active").map((s) => `${s.type}:${s.title}`));
         const fresh: Suggestion[] = incoming
@@ -87,11 +108,18 @@ export function CopilotPanel({ transcript, recording }: { transcript: string; re
     setChatInput("");
     setChatBusy(true);
     try {
-      const { data, error } = await supabase.functions.invoke("copilot", {
-        body: { mode: "chat", transcript, question: q, history: chat },
-      });
-      if (error) throw error;
-      setChat([...newHistory, { role: "assistant", content: data?.reply ?? "(pas de réponse)" }]);
+      // Render `/ask` only takes a single `prompt` — we prepend client + transcript context.
+      const ctxParts: string[] = [];
+      if (clientName || clientId) {
+        ctxParts.push(`Client: ${clientName ?? "(inconnu)"}${clientId ? ` (id: ${clientId})` : ""}`);
+      }
+      if (transcript) {
+        const tail = transcript.slice(-1500);
+        ctxParts.push(`Transcript récent:\n${tail}`);
+      }
+      ctxParts.push(`Question: ${q}`);
+      const reply = await askAgent(ctxParts.join("\n\n"));
+      setChat([...newHistory, { role: "assistant", content: reply || "(pas de réponse)" }]);
     } catch (e) {
       console.error(e);
       toast.error("Erreur du co-pilote", { description: e instanceof Error ? e.message : "Réessayez." });
