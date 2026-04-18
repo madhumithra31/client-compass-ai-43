@@ -1,58 +1,48 @@
 
 
-## Plan — Replace "Démarrer" with transcript ingestion (paste / upload / Fireflies)
+## Answering your two questions
 
-### What changes
+### 1. What does the "Démarrer" button currently do?
 
-**1. New `src/lib/transcript-parser.ts`** (~80 lines, pure)
-- `parseTranscript(raw: string): TranscriptLine[]`
-- Heuristics: speaker prefixes (`RM:`, `Conseiller:`, `Advisor:`, `Client:`, `Name:`), VTT/SRT cleanup (strip cues + numeric IDs + timestamp lines), plain prose paragraphs → single `RM` notes.
-- Default `sentiment: 0.6` (flat — honest, since no audio prosody).
+It's a **scripted demo** — not a real recording. Here's exactly what happens when you click it (`src/routes/meeting.tsx` lines 201-207, 33-110):
 
-**2. New edge function `supabase/functions/fireflies-list/index.ts`**
-- GraphQL POST through the connector gateway (`https://connector-gateway.lovable.dev/fireflies/graphql`).
-- Two modes:
-  - `{ action: "list" }` → returns last 20 transcripts: `id`, `title`, `date`, `duration`, `participants`.
-  - `{ action: "fetch", id }` → returns one transcript with `sentences[] { speaker_name, text }`.
-- Headers: `Authorization: Bearer ${LOVABLE_API_KEY}`, `X-Connection-Api-Key: ${FIREFLIES_API_KEY}`.
-- Standard CORS + 401/402/429 passthrough (same shape as `analyze-meeting`).
-- Add `[functions.fireflies-list] verify_jwt = false` to `supabase/config.toml`.
+1. Sets `recording = true` → starts an `elapsed` timer (the "00:04, 00:05…" you saw).
+2. Triggers a `useEffect` that **drip-feeds a hard-coded transcript** from `scriptedTranscript` in `src/lib/mock-data.ts`. Every ~2.4–3.9 seconds a new line is appended to the transcript pane.
+3. As each line is appended, keyword matchers fire fake **alerts** ("Revenus exceptionnels détectés", "Signal d'inquiétude client", etc.) based on substrings like `"45 000"`, `"inquiet"`, `"locatif"`, `"léa"`.
+4. Every 3 lines, it calls the `analyze-meeting` edge function (Gemini) on the accumulated text → fills the **Insights** cards.
+5. The `Pause` button just toggles a flag that stops the drip-feed and timer. `Terminer` resets everything.
 
-**3. `src/routes/meeting.tsx`** — swap button + add modal
-- Replace the `Démarrer` button with **"Importer un transcript"** (Lucide `Upload`).
-- New `<Dialog>` with 3 tabs (`Tabs` from `@/components/ui/tabs`):
-  - **Coller** — `Textarea`, "Importer" button.
-  - **Téléverser** — `<input type="file" accept=".txt,.md,.vtt,.srt">`, reads with `FileReader`.
-  - **Fireflies** — auto-fetches the meeting list on tab open (POST to `fireflies-list` with `action: "list"`); renders a list of recent meetings with title + date + a "Importer" button per row that calls `action: "fetch"` and converts `sentences[]` → `TranscriptLine[]`.
-- On import (any source): reset state → `setLines(parsed)` in one shot → call existing `analyze()` once on the joined transcript → run existing keyword `addAlert()` loop over all lines.
-- Keep a small **"Démo live"** secondary button in the modal footer that calls the old `setRecording(true)` flow so the canned demo isn't lost.
-- For imported (non-live) transcripts the `Pause`/`Terminer` controls are replaced by a single **"Effacer"** button.
-- Sentiment chart shows a small "Sentiment N/A — transcript importé" note when `recording === false && lines.length > 0`.
+So no microphone is ever used. It's a canned presentation script that was useful for demos but does nothing for real meetings — which is exactly why we want to replace it with the import dialog.
 
-### Connector setup (will run during execution)
+### 2. Why the implementation keeps failing
 
-Before deploying the edge function, I'll call `standard_connectors--connect` with `connector_id: "fireflies"`. The user will be prompted to authorize Fireflies; once linked, `FIREFLIES_API_KEY` and `LOVABLE_API_KEY` are auto-injected as edge-function secrets.
+The plan **never actually ran**. It's stuck at step 0:
 
-### Files
+- The very first action of the plan is calling `standard_connectors--connect` for Fireflies. That tool requires **your one-click approval in the chat** (you'd see a "Connect Fireflies" prompt), and that approval hasn't been given yet.
+- Without it, `FIREFLIES_API_KEY` is never injected into the project, so the rest of the plan (edge function, modal Fireflies tab) can't be built or tested.
+- Each "build out the plan" attempt re-issues the connect prompt and waits — nothing else proceeds. That's the loop you're seeing.
 
-- `src/lib/transcript-parser.ts` — NEW
-- `src/routes/meeting.tsx` — replace button, add `ImportTranscriptDialog` subcomponent (~150 lines added inline)
-- `supabase/functions/fireflies-list/index.ts` — NEW
-- `supabase/config.toml` — add `[functions.fireflies-list]` block
+This is *not* a code bug. It's a missing authorization step. The connect prompt asks you to either pick an existing Fireflies workspace connection or sign in to Fireflies; once you click through it, the whole rest of the plan can be implemented in one pass.
 
-### How it works (explanation for the user)
+## Two ways forward — pick one
 
-1. Click **"Importer un transcript"** in the meeting page header. A dialog opens with 3 tabs.
-2. **Coller** — paste any meeting text (Teams/Zoom export, an email summary, raw notes). Click Importer.
-3. **Téléverser** — drop a `.txt`, `.vtt` or `.srt` file from your computer.
-4. **Fireflies** — shows your last 20 Fireflies meetings; click one to pull its transcript.
-5. The parser turns the input into the same `TranscriptLine[]` shape the live demo uses. The transcript pane fills, then the existing AI analyzer runs once and produces the Insights cards. The "Ask AI" panel on the right gets the full transcript as context, so you can immediately ask client-specific questions.
-6. The "Démo live" link in the dialog footer still triggers the canned scripted transcript if you need it for a demo.
+**Option A — Approve the Fireflies connect, ship the full 3-tab plan.**
+Same plan as before: Coller / Téléverser / Fireflies. The next "build" message will pop the Fireflies authorization dialog; click through it once, then everything (parser, edge function, modal) gets built in the same turn.
 
-### Out of scope
+**Option B — Ship paste + upload first, add Fireflies later.**
+No connector approval needed. We build only:
+- `src/lib/transcript-parser.ts` (paste/file → `TranscriptLine[]`)
+- The 2-tab "Importer un transcript" dialog in `src/routes/meeting.tsx` (Coller, Téléverser)
+- Replace the `Démarrer` button with `Importer un transcript`; keep a small "Démo live" link in the dialog footer that triggers the existing scripted flow so demos still work.
 
-- Live audio capture (would need ElevenLabs Scribe — separate scope).
-- Persisting imported transcripts to the database (state stays in component, matches rest of app).
-- Per-line sentiment from text (would require an AI call per line — flat 0.6 for honesty).
-- Speaker diarization beyond the simple `Name:` heuristic.
+This unblocks you in one turn with zero auth friction, and we can layer Fireflies on top whenever you're ready.
+
+## My recommendation
+
+Go with **Option B** now and add Fireflies in a follow-up. Reasons:
+- It's unblocked immediately — no waiting on a connector authorization round-trip.
+- 90% of the value (paste any transcript / drop any file) is in the first two tabs.
+- Fireflies adds real complexity (edge function + GraphQL + auth state) that's better isolated in its own change so we can debug it cleanly if the gateway response shape needs tweaking.
+
+Tell me **A** or **B** and I'll execute. If A, just be ready to click "Connect" when the Fireflies prompt appears.
 
