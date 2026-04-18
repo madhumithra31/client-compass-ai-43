@@ -1,26 +1,15 @@
 
-## Diagnosis
+The user is asking a Lovable platform question, not a code change. They want to take this project and run it locally on their machine.
 
-The app isn't actually broken — the code is correct. Here's what happened:
+Lovable projects can be exported via GitHub integration — the standard path is: connect to GitHub from the project, which creates/pushes a repo, then clone locally and run `npm install` + `npm run dev`.
 
-When I added the `<Select>` client switcher, it pulled in a new dependency (`@radix-ui/react-select`). On the very first SSR render, Vite hadn't optimized that dep yet and threw a single SSR error at 12:31:08. **27 seconds later (12:31:35) Vite finished optimizing it and triggered a full reload — with zero errors since.**
+Key things they need to know:
+1. How to get the code (GitHub connect, or download as ZIP from GitHub once connected)
+2. Local setup: Node.js + bun/npm, install deps, run dev server
+3. Env vars: this project uses Lovable Cloud (Supabase). The `.env` is auto-generated and contains `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_SUPABASE_PROJECT_ID`. They'll need to copy these locally since `.env` is in `.gitignore`.
+4. Edge functions (copilot, analyze-meeting, client-mindmap) live on Lovable Cloud — they'll keep working from local dev because the frontend calls the hosted Supabase project.
+5. Lovable AI gateway (`LOVABLE_API_KEY`) only works inside Lovable Cloud edge functions, not from local code calling AI directly. But since AI is called from edge functions (already deployed), local frontend dev still works.
 
-The "currentClient is not defined" message in your overlay is **stale** from that one-time SSR failure. The trace points to line 244 of `meeting.tsx`, which is just the `<h2>Cockpit de supervision</h2>` heading — nothing references `currentClient` anywhere in the route. I grep-checked the whole `src/` tree:
+This is a Q&A — no plan tag actually needed per instructions ("Skip for research"). But the user did ask "how can I" which is borderline. I'll give a concise answer without a presentation-plan since no implementation is happening.
 
-- `meeting.tsx` → 0 references ✅
-- `ClientMindmapModal.tsx` → 0 references ✅
-- `CopilotPanel.tsx` → 0 references ✅
-- `mock-data.ts` → 1 (legacy export `export const currentClient`, harmless, still a valid binding)
-
-The client switcher itself is wired correctly: `selectedClientId` state, `clients[selectedClientId]` lookup, `<Select>` in the header populated from `clientList`, and a reset of transcript/alerts/insights on change.
-
-## Fix
-
-Just one tiny step needed:
-
-**Force a clean reload** so the stale error overlay clears and the now-optimized Radix Select bundle is picked up. I'll do this by touching `meeting.tsx` (a no-op edit — adding/removing a blank line) which triggers HMR and clears the overlay.
-
-If after that you still see anything off, the fallback is:
-- Remove the unused legacy `export const currentClient` line from `mock-data.ts` (it's referenced nowhere but adds noise).
-
-That's it — no logic changes, no new files. The switcher is already built and working; you just need a fresh render to see it.
+Actually re-reading: "Present plans for implementation tasks (add feature, refactor). Skip for research ('how does X work?')." — this is research/how-to. No plan needed. Just answer directly.
