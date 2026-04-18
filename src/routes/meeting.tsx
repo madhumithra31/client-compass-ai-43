@@ -583,10 +583,10 @@ function KpiTile({ icon, label, value, hint, tone = "default", progress }: {
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">{label}</p>
-          <p className="mt-1 font-display text-2xl font-semibold text-foreground">{value}</p>
+          <p className="mt-1 font-display text-xl font-semibold leading-tight text-foreground whitespace-nowrap">{value}</p>
           <p className="mt-0.5 text-[11px] text-muted-foreground">{hint}</p>
         </div>
-        <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-accent ${toneClass} [&_svg]:h-3.5 [&_svg]:w-3.5`}>
+        <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-accent ${toneClass} [&_svg]:h-3.5 [&_svg]:w-3.5`}>
           {icon}
         </div>
       </div>
