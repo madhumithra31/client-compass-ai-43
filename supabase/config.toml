@@ -3,8 +3,5 @@ project_id = "hwisnhiwnekygxtupqtr"
 [functions.analyze-meeting]
 verify_jwt = false
 
-[functions.copilot]
-verify_jwt = false
-
 [functions.client-mindmap]
 verify_jwt = false
