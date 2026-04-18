@@ -1,59 +1,48 @@
 
 
-## Current state
+## Two small fixes
 
-The middle panel ("Cockpit de supervision") shows two things, neither tied to the selected client:
-1. `DashboardKpis` — 4 generic KPIs aggregated from `otherLiveMeetings`
-2. `LiveMeetingsTable` — static table of 4 OTHER advisors' meetings
+### 1. KPI cards — reduce bold value size to prevent wrapping
 
-Meanwhile the `Client` type in `mock-data.ts` carries a LOT of detail we never surface: full `positions[]` per contract, `totalAssets`/`totalDebt`/`netWorth`, `annualRevenue` + `tmi`, `equipmentScore`, `recentEvents[]`, `projects[]` with horizons, `family` with housing value, asset allocation per contract (`allocFondsEuro`/`allocUC`), credit details (`crd`, `monthly`, `rate`, `maturity`), etc.
+In the screenshot, "229 k€", "139 k€" and "10.3 ans" wrap onto 2 lines because `text-2xl` + the icon column leaves too little room at the current panel width (~430px column → ~200px per tile in 2-col layout).
 
-The left `ClientCard` is already a dense vertical summary. The middle panel should be the **deep, visual, working view** of that same client — what the advisor actually looks at during the meeting.
+**Change in `src/routes/meeting.tsx` (`KpiTile`, line 586):**
+- Value: `text-2xl` → `text-xl`
+- Add `whitespace-nowrap` to keep the number + unit on one line
+- Add `leading-tight` so spacing doesn't feel cramped after shrinking
+- Tighten the icon box from `h-8 w-8` → `h-7 w-7` to claw back a bit of horizontal room
 
-## Proposal — replace the cockpit with a "Client 360°" workspace
+That's all that's needed visually — the labels and hints already fit fine.
 
-Convert the middle panel into a tabbed dashboard for the **currently selected client**. Header keeps the live indicator. Body becomes:
+### 2. CopilotPanel — remove Suggestions tab, rename "Co-pilote AI"
 
-**Top strip — Patrimoine en un coup d'œil (always visible)**
-4 KPI tiles computed from the selected client:
-- **Patrimoine net** — `netWorth` (with totalAssets / totalDebt breakdown underneath)
-- **Revenus annuels** — `annualRevenue` + `TMI %` badge
-- **Équipement** — `equipmentScore`/10 with progress bar (vs. segment average)
-- **Ancienneté** — `seniorityYears` years + `clientSinceDate`
+In `src/components/CopilotPanel.tsx`:
 
-**Tabbed content below** (default = Patrimoine):
+- **Remove the Suggestions tab entirely**: delete the `tab` state, both `TabBtn`s, and the entire `tab === "suggest" ? (...) : (...)` ternary — keep only the "Demander" (chat) view as the panel's sole content.
+- **Remove all suggestion plumbing** since it's no longer used: `suggestions` state, `loadingSuggest`, `lastSuggestLenRef`, the auto-fetch `useEffect` on transcript, `fetchSuggestions()`, `update()`, `active`/`sortedActive`, plus the now-unused components `SuggestionCard`, `EmptyState`, and `TYPE_META`. Drop the `Suggestion` type export, and the unused lucide imports (`Lightbulb`, `HelpCircle`, `MessageCircle`, `AlertOctagon`, `Package`, `ListTodo`, `Check`, `X`, `Lightbulb`) and `quickAgent` from `@/lib/copilot-api` — keep only `askAgent`.
+- **Rename "Co-pilote AI" → "Ask AI"** in the header. Subtitle update: "Questions contextuelles sur le client" (keeps tone consistent with the rest of the French UI but flags the action). Also drop the now-meaningless `<TabBtn>` row since there's only one view.
+- Keep the live indicator badge, the chat scroll fix, markdown rendering, preset questions, and the textarea/send form — all unchanged.
 
-1. **Patrimoine** — Stacked horizontal bar of asset allocation across all contracts (Fonds €, UC, immobilier, dette), then a sortable table of contracts (label, family, balance, allocation €/UC %, maturity). Drill-in row expands to show top positions (`positions[]` with ISIN, valuation, weight).
+### Naming options for the rename
 
-2. **Projets & Vie** — Timeline of `projects[]` ordered by `horizonYears` with target amounts, plus a `family` card (spouse, children ages, housing, residence value). Highlights priority "Haute" projects.
+I'll go with **"Ask AI"** unless you prefer another. Quick alternatives if you want to swap:
+- "Ask AI" (recommended — short, matches the only remaining action)
+- "Client Assistant"
+- "AI Advisor"
+- "Smart Assist"
 
-3. **Activité récente** — Vertical timeline from `recentEvents[]` (date, type, channel, criticality color). Most recent on top. This is the "what's happened with this client" view the advisor needs going into the meeting.
-
-4. **Risques & Opportunités** — Computed signals from the data:
-   - Liquidity ratio (cash contracts vs. total)
-   - Concentration risk (top 3 positions weight)
-   - Tax optimization windows (high TMI + unused PER, livret saturation)
-   - Maturity alerts (contracts maturing < 12 months)
-   - Equipment gaps vs. segment
-
-The tabs all switch in-place, no route change. When the advisor changes the client in the dropdown, the entire middle panel reactively re-renders for the new client (the data is already on `clients[selectedClientId]`).
-
-## What happens to the old content
-
-- `DashboardKpis` + `LiveMeetingsTable` + `MiniSentiment` + `Kpi` helpers — **deleted** (the supervisor view of "other RMs' meetings" doesn't fit a single-RM workflow). 
-- `otherLiveMeetings` import — removed from `meeting.tsx`. Stays in `mock-data.ts` in case we re-introduce a supervisor route later.
-
-If you want to **keep** the multi-meeting supervisor view, alternative: move it to a separate `/cockpit` route and make `/meeting` purely client-focused. Tell me and I'll do that instead.
+If you want a different name, tell me in your next message and I'll use that instead of "Ask AI".
 
 ## Files touched
 
-- `src/routes/meeting.tsx` — replace the middle `<section>` body and its helper components with new ones (`ClientKpiStrip`, `ClientWorkspaceTabs`, `PatrimoineTab`, `ProjetsTab`, `ActiviteTab`, `RisquesTab`). ~250 lines net change in one file.
+- `src/routes/meeting.tsx` — `KpiTile` styling only (~3 line changes)
+- `src/components/CopilotPanel.tsx` — strip out suggestions logic + UI, rename header (~150 lines deleted, ~5 changed)
 
-No new dependencies (we already have `framer-motion`, `lucide-react`, and SVG charts inline). No backend/data changes — all fields are already in the `Client` type and CSVs.
+No new dependencies. No backend changes. The `Suggestion` type isn't imported anywhere else so removing it is safe.
 
 ## Out of scope
 
-- Editing contract/position values inline (read-only view).
-- Real-time updates to client data during the meeting (the live stuff stays in left/right panels: sentiment, alerts, transcript-driven insights).
-- Adding more CSV fields — using only what's already loaded.
+- Re-adding suggestions later (we can bring them back from git history if needed).
+- Restyling the chat bubbles or preset buttons.
+- Translating the panel header to English beyond the title rename.
 
