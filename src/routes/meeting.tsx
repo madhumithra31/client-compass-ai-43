@@ -227,6 +227,12 @@ function Meeting() {
         </aside>
       </main>
       <Toaster position="bottom-right" richColors closeButton />
+      <ClientMindmapModal
+        open={mindmapOpen}
+        onClose={() => setMindmapOpen(false)}
+        client={currentClient}
+        transcript={lines.map((l) => `${l.speaker === "RM" ? "Conseiller" : "Client"}: ${l.text}`).join("\n")}
+      />
     </div>
   );
 }
