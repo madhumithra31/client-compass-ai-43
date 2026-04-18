@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
+// HMR refresh trigger
 import { motion, AnimatePresence } from "framer-motion";
 import { Toaster } from "sonner";
 import { Logo } from "@/components/Logo";
