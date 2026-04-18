@@ -6,12 +6,13 @@ import { Toaster } from "sonner";
 import { Logo } from "@/components/Logo";
 import { CopilotPanel } from "@/components/CopilotPanel";
 import { ClientMindmapModal } from "@/components/ClientMindmapModal";
-import { clients, clientList, defaultClientId, scriptedTranscript, otherLiveMeetings, type TranscriptLine, type Client } from "@/lib/mock-data";
+import { clients, clientList, defaultClientId, scriptedTranscript, type TranscriptLine, type Client, type Contract, type Position, type Project, type ClientEvent } from "@/lib/mock-data";
 import { supabase } from "@/integrations/supabase/client";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Mic, MicOff, Pause, Play, Sparkles, AlertTriangle, CheckCircle2, Mail,
-  Phone, Briefcase, Calendar, Tag, ArrowLeft, Loader2, ArrowRight, Activity, Bell, TrendingUp, TrendingDown, Users, Network,
+  Phone, Briefcase, Calendar, Tag, ArrowLeft, Loader2, Users, Network,
+  Wallet, TrendingUp, Award, Clock, ChevronDown, ChevronRight, Target, Home, Heart, Activity as ActivityIcon, Lightbulb,
 } from "lucide-react";
 
 export const Route = createFileRoute("/meeting")({
