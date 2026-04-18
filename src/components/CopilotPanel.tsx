@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { askAgent, quickAgent } from "@/lib/copilot-api";
 import { toast } from "sonner";
 import {
@@ -35,7 +37,7 @@ export function CopilotPanel({ transcript, recording, clientId, clientName }: { 
   const [chatInput, setChatInput] = useState("");
   const [chatBusy, setChatBusy] = useState(false);
   const lastSuggestLenRef = useRef(0);
-  const chatEndRef = useRef<HTMLDivElement>(null);
+  const chatScrollRef = useRef<HTMLDivElement>(null);
 
   // Auto-fetch suggestions when transcript grows enough
   useEffect(() => {
@@ -130,7 +132,8 @@ export function CopilotPanel({ transcript, recording, clientId, clientName }: { 
   }
 
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const el = chatScrollRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
   }, [chat.length, chatBusy]);
 
   function update(id: string, status: Suggestion["status"]) {
@@ -202,7 +205,7 @@ export function CopilotPanel({ transcript, recording, clientId, clientName }: { 
         </div>
       ) : (
         <div className="flex flex-1 flex-col overflow-hidden">
-          <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
+          <div ref={chatScrollRef} className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
             {chat.length === 0 && (
               <div className="space-y-3">
                 <p className="text-xs text-muted-foreground">
@@ -236,14 +239,15 @@ export function CopilotPanel({ transcript, recording, clientId, clientName }: { 
                     ? "rounded-tr-sm bg-primary text-primary-foreground"
                     : "rounded-tl-sm bg-muted text-foreground"
                 }`}>
-                  <p className="whitespace-pre-wrap leading-relaxed">{m.content}</p>
+                  {m.role === "assistant"
+                    ? <MarkdownMessage>{m.content}</MarkdownMessage>
+                    : <p className="whitespace-pre-wrap leading-relaxed">{m.content}</p>}
                 </div>
               </div>
             ))}
             {chatBusy && (
               <ChatThinking />
             )}
-            <div ref={chatEndRef} />
           </div>
           <form
             onSubmit={(e) => { e.preventDefault(); void sendChat(); }}
@@ -366,6 +370,51 @@ function ChatThinking() {
       {slow
         ? "Réveil du service en cours (cold start, ~30-60s)…"
         : "Le co-pilote réfléchit…"}
+    </div>
+  );
+}
+
+function MarkdownMessage({ children }: { children: string }) {
+  return (
+    <div className="text-sm leading-relaxed">
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        components={{
+          p: ({ children }) => <p className="mb-2 last:mb-0 leading-relaxed">{children}</p>,
+          ul: ({ children }) => <ul className="mb-2 last:mb-0 list-disc pl-4 space-y-0.5">{children}</ul>,
+          ol: ({ children }) => <ol className="mb-2 last:mb-0 list-decimal pl-4 space-y-0.5">{children}</ol>,
+          li: ({ children }) => <li className="leading-snug">{children}</li>,
+          strong: ({ children }) => <strong className="font-semibold text-foreground">{children}</strong>,
+          em: ({ children }) => <em className="italic">{children}</em>,
+          a: ({ children, href }) => (
+            <a href={href} target="_blank" rel="noreferrer" className="text-primary underline underline-offset-2 hover:opacity-80">
+              {children}
+            </a>
+          ),
+          code: ({ children }) => (
+            <code className="rounded bg-background/60 px-1 py-0.5 font-mono text-[11px]">{children}</code>
+          ),
+          pre: ({ children }) => (
+            <pre className="my-2 overflow-x-auto rounded-md bg-background/60 p-2 font-mono text-[11px]">{children}</pre>
+          ),
+          h1: ({ children }) => <h1 className="mb-1.5 mt-2 text-base font-semibold">{children}</h1>,
+          h2: ({ children }) => <h2 className="mb-1.5 mt-2 text-sm font-semibold">{children}</h2>,
+          h3: ({ children }) => <h3 className="mb-1 mt-2 text-sm font-semibold">{children}</h3>,
+          blockquote: ({ children }) => (
+            <blockquote className="my-2 border-l-2 border-border pl-2 italic text-muted-foreground">{children}</blockquote>
+          ),
+          hr: () => <hr className="my-2 border-border" />,
+          table: ({ children }) => (
+            <div className="my-2 overflow-x-auto">
+              <table className="w-full border-collapse text-[11px]">{children}</table>
+            </div>
+          ),
+          th: ({ children }) => <th className="border border-border bg-muted/50 px-1.5 py-1 text-left font-semibold">{children}</th>,
+          td: ({ children }) => <td className="border border-border px-1.5 py-1">{children}</td>,
+        }}
+      >
+        {children}
+      </ReactMarkdown>
     </div>
   );
 }
