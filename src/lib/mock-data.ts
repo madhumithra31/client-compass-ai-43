@@ -3824,7 +3824,7 @@ export const clients: Record<string, Client> = {
     }
   };
 
-export const currentClient: Client = clients["CLI00005"];
+
 
 // Ordered list for client switchers / lookup tables.
 export const clientList: Client[] = Object.values(clients).sort((a, b) =>
