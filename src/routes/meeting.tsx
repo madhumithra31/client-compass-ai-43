@@ -169,6 +169,34 @@ function Meeting() {
             </span>
           </div>
           <div className="flex items-center gap-3">
+            <Select
+              value={selectedClientId}
+              onValueChange={(id) => {
+                setSelectedClientId(id);
+                // Reset live meeting state when switching client
+                setLines([]);
+                setSentimentSeries([]);
+                setAlerts([]);
+                setInsights([]);
+                setElapsed(0);
+                setRecording(false);
+                setPaused(false);
+                idxRef.current = 0;
+              }}
+            >
+              <SelectTrigger className="h-8 w-[220px] text-xs">
+                <Users className="mr-1.5 h-3.5 w-3.5 text-muted-foreground" />
+                <SelectValue placeholder="Choisir un client" />
+              </SelectTrigger>
+              <SelectContent>
+                {clientList.map((cl) => (
+                  <SelectItem key={cl.id} value={cl.id} className="text-xs">
+                    <span className="font-medium">{cl.name}</span>
+                    <span className="ml-2 text-muted-foreground">· {cl.aum}</span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <div className="hidden items-center gap-2 rounded-full border border-border px-3 py-1.5 text-xs md:flex">
               {recording && !paused && <span className="h-2 w-2 rounded-full bg-destructive pulse-ring" />}
               <span className="font-mono text-foreground">{formatTime(elapsed)}</span>
@@ -203,7 +231,7 @@ function Meeting() {
       <main className="mx-auto grid max-w-[1500px] gap-5 px-6 py-6 lg:grid-cols-[280px_minmax(0,1fr)_380px]">
         {/* LEFT — Client + Sentiment + Alerts + Insights */}
         <aside className="space-y-4">
-          <ClientCard onOpenMindmap={() => setMindmapOpen(true)} />
+          <ClientCard client={client} onOpenMindmap={() => setMindmapOpen(true)} />
           <SentimentCard avg={avgSentiment} series={sentimentSeries} />
           <AlertsCard alerts={alerts} />
           <InsightsCard insights={insights} loading={analyzing && insights.length === 0} hasTranscript={lines.length > 0} />
@@ -241,15 +269,15 @@ function Meeting() {
       <ClientMindmapModal
         open={mindmapOpen}
         onClose={() => setMindmapOpen(false)}
-        client={currentClient}
+        client={client}
         transcript={lines.map((l) => `${l.speaker === "RM" ? "Conseiller" : "Client"}: ${l.text}`).join("\n")}
       />
     </div>
   );
 }
 
-function ClientCard({ onOpenMindmap }: { onOpenMindmap: () => void }) {
-  const c = currentClient;
+function ClientCard({ client, onOpenMindmap }: { client: Client; onOpenMindmap: () => void }) {
+  const c = client;
   const topProjects = c.projects.slice(0, 3);
   return (
     <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
