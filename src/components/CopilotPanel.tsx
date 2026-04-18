@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { askAgent, quickAgent } from "@/lib/copilot-api";
 import { toast } from "sonner";
 import {
