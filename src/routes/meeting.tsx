@@ -261,7 +261,7 @@ function ClientCard({ onOpenMindmap }: { onOpenMindmap: () => void }) {
       <dl className="mt-6 space-y-3.5 text-sm">
         <Row icon={<Briefcase className="h-4 w-4" />} label="AUM" value={c.aum} />
         <Row icon={<Tag className="h-4 w-4" />} label="Profil de risque" value={c.riskProfile} />
-        <Row icon={<Calendar className="h-4 w-4" />} label="Client depuis" value={c.joined} />
+        <Row icon={<Calendar className="h-4 w-4" />} label="Conseiller" value={c.rm} />
         <Row icon={<Mail className="h-4 w-4" />} label="Email" value={c.email} />
         <Row icon={<Phone className="h-4 w-4" />} label="Téléphone" value={c.phone} />
       </dl>
@@ -273,9 +273,20 @@ function ClientCard({ onOpenMindmap }: { onOpenMindmap: () => void }) {
       </div>
 
       <div className="mt-5 border-t border-border pt-4">
-        <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Notes existantes</p>
-        <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-          {c.notes.map((n, i) => (<li key={i}>· {n}</li>))}
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+          Portefeuille · {c.contracts.length} contrats
+        </p>
+        <ul className="mt-3 space-y-1.5 text-sm text-muted-foreground">
+          {c.contracts.slice(0, 6).map((k) => (
+            <li key={k.id} className="flex justify-between gap-2">
+              <span className="truncate">· {k.label}</span>
+              {k.balance != null && (
+                <span className="shrink-0 font-medium text-foreground">
+                  {k.balance >= 1000 ? `${(k.balance / 1000).toFixed(0)} k€` : `${k.balance} €`}
+                </span>
+              )}
+            </li>
+          ))}
         </ul>
       </div>
     </div>
