@@ -21,7 +21,8 @@ export const Route = createFileRoute("/meeting")({
   component: Meeting,
 });
 
-type AlertItem = { id: string; type: "info" | "change" | "risk"; title: string; detail: string; time: string };
+type AlertSeed = { id: string; type: "info" | "change" | "risk"; title: string; detail: string };
+type AlertItem = AlertSeed & { time: string };
 type Insight = { id: string; category: "Decision" | "Request" | "Risk" | "Follow-up"; text: string };
 
 function Meeting() {
@@ -104,7 +105,7 @@ function Meeting() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lines.length]);
 
-  function addAlert(a: AlertItem) {
+  function addAlert(a: AlertSeed) {
     setAlerts((prev) => [{ ...a, time: formatTime(elapsed) }, ...prev]);
   }
 
