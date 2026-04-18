@@ -5,12 +5,29 @@ const BASE = "https://bnp-ai-copilot.onrender.com";
 type ApiOk = { response: string };
 type ApiErr = { error: string };
 
-async function postJson<T>(path: string, body: unknown): Promise<T> {
-  const res = await fetch(`${BASE}${path}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
+async function postJson<T>(path: string, body: unknown, timeoutMs = 90_000): Promise<T> {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  let res: Response;
+  try {
+    res = await fetch(`${BASE}${path}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      signal: ctrl.signal,
+    });
+  } catch (e) {
+    clearTimeout(timer);
+    if (e instanceof DOMException && e.name === "AbortError") {
+      throw new Error(
+        "Le service n'a pas répondu à temps (cold start Render ~30-60s). Réessayez.",
+      );
+    }
+    throw new Error(
+      `Impossible de joindre le co-pilote: ${e instanceof Error ? e.message : "erreur réseau"}`,
+    );
+  }
+  clearTimeout(timer);
 
   let payload: ApiOk | ApiErr | null = null;
   try {
