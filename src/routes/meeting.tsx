@@ -240,37 +240,41 @@ function Meeting() {
 function ClientCard({ onOpenMindmap }: { onOpenMindmap: () => void }) {
   const c = currentClient;
   return (
-    <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
-      <div className="flex items-center gap-3">
-        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-primary font-display text-base font-semibold text-primary-foreground shadow-glow">
+    <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+      <div className="flex items-center gap-4">
+        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-primary font-display text-lg font-semibold text-primary-foreground shadow-glow">
           {c.initials}
         </div>
         <div className="min-w-0">
-          <h3 className="font-display text-lg font-semibold leading-tight text-foreground">{c.name}</h3>
-          <p className="text-xs text-muted-foreground">{c.id} · {c.segment}</p>
+          <h3 className="font-display text-xl font-semibold leading-tight text-foreground">{c.name}</h3>
+          <p className="mt-0.5 text-sm text-muted-foreground">{c.id} · {c.segment}</p>
         </div>
       </div>
+
       <button
         onClick={onOpenMindmap}
-        className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-md border border-primary/30 bg-primary/5 px-3 py-2 text-xs font-medium text-primary transition-colors hover:bg-primary/10"
+        className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-primary/30 bg-primary/5 px-4 py-3 text-sm font-medium text-primary transition-colors hover:bg-primary/10"
       >
-        <Network className="h-3.5 w-3.5" /> Synthèse AI · Fiche 360°
+        <Network className="h-4 w-4" /> Synthèse AI · Fiche 360°
       </button>
-      <dl className="mt-5 space-y-2.5 text-xs">
-        <Row icon={<Briefcase className="h-3.5 w-3.5" />} label="AUM" value={c.aum} />
-        <Row icon={<Tag className="h-3.5 w-3.5" />} label="Profil de risque" value={c.riskProfile} />
-        <Row icon={<Calendar className="h-3.5 w-3.5" />} label="Client depuis" value={c.joined} />
-        <Row icon={<Mail className="h-3.5 w-3.5" />} label="Email" value={c.email} />
-        <Row icon={<Phone className="h-3.5 w-3.5" />} label="Téléphone" value={c.phone} />
+
+      <dl className="mt-6 space-y-3.5 text-sm">
+        <Row icon={<Briefcase className="h-4 w-4" />} label="AUM" value={c.aum} />
+        <Row icon={<Tag className="h-4 w-4" />} label="Profil de risque" value={c.riskProfile} />
+        <Row icon={<Calendar className="h-4 w-4" />} label="Client depuis" value={c.joined} />
+        <Row icon={<Mail className="h-4 w-4" />} label="Email" value={c.email} />
+        <Row icon={<Phone className="h-4 w-4" />} label="Téléphone" value={c.phone} />
       </dl>
-      <div className="mt-4 flex flex-wrap gap-1.5">
+
+      <div className="mt-5 flex flex-wrap gap-2">
         {c.tags.map((t) => (
-          <span key={t} className="rounded-full bg-accent px-2 py-0.5 text-[10px] font-medium text-accent-foreground">{t}</span>
+          <span key={t} className="rounded-full bg-accent px-3 py-1 text-xs font-medium text-accent-foreground">{t}</span>
         ))}
       </div>
-      <div className="mt-4 border-t border-border pt-3">
-        <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">Notes existantes</p>
-        <ul className="mt-2 space-y-1.5 text-xs text-muted-foreground">
+
+      <div className="mt-5 border-t border-border pt-4">
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Notes existantes</p>
+        <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
           {c.notes.map((n, i) => (<li key={i}>· {n}</li>))}
         </ul>
       </div>
