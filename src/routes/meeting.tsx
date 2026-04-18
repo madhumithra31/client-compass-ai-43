@@ -263,6 +263,8 @@ function Meeting() {
           <CopilotPanel
             transcript={lines.map((l) => `${l.speaker === "RM" ? "Conseiller" : "Client"}: ${l.text}`).join("\n")}
             recording={recording && !paused}
+            clientId={client.id}
+            clientName={client.name}
           />
         </aside>
       </main>
