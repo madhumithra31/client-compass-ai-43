@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
+import { Toaster } from "sonner";
 import { Logo } from "@/components/Logo";
+import { CopilotPanel } from "@/components/CopilotPanel";
 import { currentClient, scriptedTranscript, type TranscriptLine } from "@/lib/mock-data";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -185,11 +187,13 @@ function Meeting() {
         </div>
       </header>
 
-      <main className="mx-auto grid max-w-[1400px] gap-6 px-6 py-6 lg:grid-cols-[300px_1fr_340px]">
-        {/* LEFT — Client profile */}
+      <main className="mx-auto grid max-w-[1500px] gap-5 px-6 py-6 lg:grid-cols-[280px_minmax(0,1fr)_380px]">
+        {/* LEFT — Client + Sentiment + Alerts + Insights */}
         <aside className="space-y-4">
           <ClientCard />
           <SentimentCard avg={avgSentiment} series={sentimentSeries} />
+          <AlertsCard alerts={alerts} />
+          <InsightsCard insights={insights} loading={analyzing && insights.length === 0} hasTranscript={lines.length > 0} />
         </aside>
 
         {/* CENTER — Transcript */}
@@ -248,12 +252,15 @@ function Meeting() {
           </div>
         </section>
 
-        {/* RIGHT — Insights & Alerts */}
-        <aside className="space-y-4">
-          <AlertsCard alerts={alerts} />
-          <InsightsCard insights={insights} loading={analyzing && insights.length === 0} hasTranscript={lines.length > 0} />
+        {/* RIGHT — Proactive Co-pilot */}
+        <aside>
+          <CopilotPanel
+            transcript={lines.map((l) => `${l.speaker === "RM" ? "Conseiller" : "Client"}: ${l.text}`).join("\n")}
+            recording={recording && !paused}
+          />
         </aside>
       </main>
+      <Toaster position="bottom-right" richColors closeButton />
     </div>
   );
 }
