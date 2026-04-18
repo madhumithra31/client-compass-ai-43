@@ -1,33 +1,42 @@
 
 
-The "Demander" tab in `CopilotPanel.tsx` shows 3 hardcoded French example questions when chat is empty. They currently just pre-fill the textarea (no auto-send). User wants 4 new English questions, and they should be tied to the selected client.
+## Two issues, two small fixes — both in `src/components/CopilotPanel.tsx`
 
-Looking at current code (lines ~165-180 of CopilotPanel.tsx):
-- The 3 example buttons call `setChatInput(q)` — user still has to press send.
-- `sendChat()` already auto-injects client name + id + transcript context into the prompt sent to Render `/ask`.
+### 1. Render assistant messages as markdown
 
-So "tied to the selected client" is mostly already handled — every `/ask` call prepends `Client: {clientName} (id: {clientId})`. I just need to:
+The Render agent returns markdown (lists, **bold**, headings, code), but we render it inside `<p className="whitespace-pre-wrap">{m.content}</p>` so it shows as raw `**text**` and `- item`.
 
-## Plan
+**Fix:** add `react-markdown` + `remark-gfm` (for tables, task lists, autolinks) and render assistant messages through it. User messages stay as plain text (no need to parse what the user typed).
 
-**1. Replace the 3 preset questions** in `src/components/CopilotPanel.tsx` (the `chat.length === 0` block) with the 4 new ones:
-- "Did this client earn money last year?"
-- "Is my client financially healthy?"
-- "What should I know before this meeting?"
-- "Which product might suit this client?"
+- Add deps: `react-markdown`, `remark-gfm`.
+- New small component `MarkdownMessage` inside `CopilotPanel.tsx` that wraps `<ReactMarkdown remarkPlugins={[remarkGfm]}>` with Tailwind-styled element overrides (p, ul, ol, li, strong, em, a, code, pre, h1-3, blockquote) so it matches the existing chat bubble typography (small, tight leading, inherited color).
+- In the chat map, when `m.role === "assistant"` use `<MarkdownMessage>{m.content}</MarkdownMessage>`; keep the current `<p>` for user messages.
 
-**2. Make them one-click send (not just pre-fill)** — better UX for tied-to-client questions. Clicking a preset will immediately submit the question to `/ask` with the existing client+transcript context auto-prepended by `sendChat()`. Add a small helper `sendPreset(q)` that sets input then calls `sendChat()` directly, or just inline: set state and trigger send.
+### 2. Stop the whole page from scrolling on every chat update
 
-**3. Update the intro copy** above the buttons to match: change the French explainer to something like *"Ask a quick question about {clientName} — the co-pilot already has their full profile and live transcript."* Falls back gracefully if no client selected.
+Current code:
+```ts
+useEffect(() => {
+  chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+}, [chat.length, chatBusy]);
+```
 
-**4. No backend changes** — `clientId` and `clientName` are already passed into `CopilotPanel` and already injected into every `/ask` prompt via the context block in `sendChat()`. The 4 new questions will automatically be answered in the context of whichever client is selected in the dropdown.
+`scrollIntoView` without `block: "nearest"` walks up the ancestor chain and scrolls **every** scrollable parent — including the page/main container — to bring the target into view. That's why the whole screen jumps to the bottom.
 
-## Files touched
+**Fix:** scroll only the chat's own scroll container, not the window:
 
-- `src/components/CopilotPanel.tsx` — edit the `chat.length === 0` empty-state block only (~15 lines). No new imports, no new props, no new dependencies.
+- Replace the `scrollIntoView` call with a direct `scrollTop = scrollHeight` on the chat messages container. Add a `chatScrollRef` on the `<div className="flex-1 ... overflow-y-auto ...">` that wraps the messages, and set `chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight` in the effect. This keeps autoscroll inside the panel and never touches the page scroll.
+- Remove the now-unused `chatEndRef` and its sentinel `<div ref={chatEndRef} />`.
 
-## Out of scope (not doing unless asked)
+That's all. No other files touched.
 
-- Translating the rest of the panel UI to English (headers, labels, toasts are still French — only the 4 preset questions are changing per your request).
-- Adding more preset categories or grouping the questions.
+## Files
+
+- `src/components/CopilotPanel.tsx` — edit
+- `package.json` — add `react-markdown` and `remark-gfm`
+
+## Out of scope
+
+- Markdown styling for the Suggestions cards (those are short structured strings; not needed unless you ask).
+- Any change to the transcript auto-scroll in `meeting.tsx` (that one is intentional and uses its own ref correctly).
 
