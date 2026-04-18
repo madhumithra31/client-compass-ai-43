@@ -231,7 +231,7 @@ function Meeting() {
   );
 }
 
-function ClientCard() {
+function ClientCard({ onOpenMindmap }: { onOpenMindmap: () => void }) {
   const c = currentClient;
   return (
     <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
@@ -239,11 +239,17 @@ function ClientCard() {
         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-primary font-display text-base font-semibold text-primary-foreground shadow-glow">
           {c.initials}
         </div>
-        <div>
+        <div className="min-w-0">
           <h3 className="font-display text-lg font-semibold leading-tight text-foreground">{c.name}</h3>
           <p className="text-xs text-muted-foreground">{c.id} · {c.segment}</p>
         </div>
       </div>
+      <button
+        onClick={onOpenMindmap}
+        className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-md border border-primary/30 bg-primary/5 px-3 py-2 text-xs font-medium text-primary transition-colors hover:bg-primary/10"
+      >
+        <Network className="h-3.5 w-3.5" /> Synthèse AI · Fiche 360°
+      </button>
       <dl className="mt-5 space-y-2.5 text-xs">
         <Row icon={<Briefcase className="h-3.5 w-3.5" />} label="AUM" value={c.aum} />
         <Row icon={<Tag className="h-3.5 w-3.5" />} label="Profil de risque" value={c.riskProfile} />
