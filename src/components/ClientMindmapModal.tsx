@@ -20,6 +20,12 @@ const TONE_STYLES: Record<Branch["tone"], { bg: string; border: string; dot: str
 };
 
 function ClientCardFull({ client }: { client: Client }) {
+  const contractsByFamily = client.contracts.reduce<Record<string, typeof client.contracts>>((acc, c) => {
+    const k = c.family || "Autres";
+    (acc[k] ||= []).push(c);
+    return acc;
+  }, {});
+
   return (
     <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
       <div className="flex items-center gap-4">
@@ -29,6 +35,9 @@ function ClientCardFull({ client }: { client: Client }) {
         <div className="min-w-0">
           <h3 className="font-display text-xl font-semibold leading-tight text-foreground">{client.name}</h3>
           <p className="mt-0.5 text-sm text-muted-foreground">{client.id} · {client.segment}</p>
+          {client.profession && client.city && (
+            <p className="mt-0.5 text-xs text-muted-foreground">{client.profession} · {client.city}{client.age ? ` · ${client.age} ans` : ""}</p>
+          )}
         </div>
       </div>
 
@@ -39,9 +48,9 @@ function ClientCardFull({ client }: { client: Client }) {
       <dl className="mt-6 space-y-3.5 text-sm">
         <Row icon={<Briefcase className="h-4 w-4" />} label="AUM" value={client.aum} />
         <Row icon={<Tag className="h-4 w-4" />} label="Profil de risque" value={client.riskProfile} />
-        <Row icon={<Calendar className="h-4 w-4" />} label="Conseiller" value={client.rm} />
-        <Row icon={<Mail className="h-4 w-4" />} label="Email" value={client.email} />
-        <Row icon={<Phone className="h-4 w-4" />} label="Téléphone" value={client.phone} />
+        <Row icon={<Calendar className="h-4 w-4" />} label="Conseiller" value={client.rm ?? "—"} />
+        <Row icon={<Mail className="h-4 w-4" />} label="Email" value={client.email ?? "—"} />
+        <Row icon={<Phone className="h-4 w-4" />} label="Téléphone" value={client.phone || "—"} />
       </dl>
 
       <div className="mt-5 flex flex-wrap gap-2">
@@ -50,22 +59,67 @@ function ClientCardFull({ client }: { client: Client }) {
         ))}
       </div>
 
+      {client.family && (
+        <div className="mt-5 border-t border-border pt-4">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Foyer</p>
+          <p className="mt-2 text-sm text-foreground">
+            {client.family.status}
+            {client.family.spouse ? ` · avec ${client.family.spouse}` : ""}
+            {client.family.childrenAges.length > 0 ? ` · ${client.family.childrenAges.length} enfant${client.family.childrenAges.length > 1 ? "s" : ""} (${client.family.childrenAges.join(", ")} ans)` : ""}
+          </p>
+          {client.family.housing && (
+            <p className="mt-1 text-xs text-muted-foreground">{client.family.housing}{client.family.residenceValue ? ` · résidence ~ ${Math.round(client.family.residenceValue / 1000)} k€` : ""}</p>
+          )}
+        </div>
+      )}
+
+      {client.projects.length > 0 && (
+        <div className="mt-5 border-t border-border pt-4">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Projets déclarés</p>
+          <ul className="mt-3 space-y-2 text-sm">
+            {client.projects.map((p, i) => (
+              <li key={i} className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="truncate text-foreground">{p.label}</p>
+                  <p className="text-[11px] text-muted-foreground">
+                    {p.horizonYears != null ? `${p.horizonYears} an${p.horizonYears > 1 ? "s" : ""}` : ""}
+                    {p.targetAmount ? ` · ${Math.round(p.targetAmount / 1000)} k€` : ""}
+                  </p>
+                </div>
+                {p.priority && (
+                  <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${
+                    p.priority.toLowerCase() === "haute" ? "bg-destructive/15 text-destructive"
+                    : p.priority.toLowerCase() === "moyenne" ? "bg-warning/15 text-warning-foreground"
+                    : "bg-muted text-muted-foreground"
+                  }`}>{p.priority}</span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       <div className="mt-5 border-t border-border pt-4">
         <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
           Portefeuille · {client.contracts.length} contrats
         </p>
-        <ul className="mt-3 space-y-1.5 text-sm text-muted-foreground">
-          {client.contracts.map((k) => (
-            <li key={k.id} className="flex justify-between gap-2">
-              <span className="truncate">· {k.label}</span>
-              {k.balance != null && (
-                <span className="shrink-0 font-medium text-foreground">
-                  {k.balance >= 1000 ? `${(k.balance / 1000).toFixed(0)} k€` : `${k.balance} €`}
-                </span>
-              )}
-            </li>
-          ))}
-        </ul>
+        {Object.entries(contractsByFamily).map(([fam, list]) => (
+          <div key={fam} className="mt-3">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/80">{fam}</p>
+            <ul className="mt-1.5 space-y-1 text-sm text-muted-foreground">
+              {list.map((k) => (
+                <li key={k.id} className="flex justify-between gap-2">
+                  <span className="truncate">· {k.label}</span>
+                  {k.balance != null && (
+                    <span className={`shrink-0 font-medium ${k.balance < 0 ? "text-destructive" : "text-foreground"}`}>
+                      {Math.abs(k.balance) >= 1000 ? `${(k.balance / 1000).toFixed(0)} k€` : `${Math.round(k.balance)} €`}
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </div>
     </div>
   );

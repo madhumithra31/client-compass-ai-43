@@ -4,11 +4,27 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const CLIENT_CONTEXT = `Client: Dr. Hélène Dufour (CLI00005)
-Segment: Wealth Management · Profil: Dynamique
-Profession libérale (médecin), patrimoine diversifié, intérêt ESG, projet immobilier locatif
-Portefeuille: AV multisupports, PEA, PER, CTO, crédit immo en cours, Carte Visa Infinite
-Conseiller: Karim Haddad`;
+const CLIENT_CONTEXT = `Client: M. Marc Girard (CLI00005), 49 ans, Nantes
+Profession libérale établie · TMI 41% · Revenus annuels déclarés ~ 138 857 €
+Segmentation: Particulier Standard · Profil de risque: Dynamique · Sensibilité marché: Faible
+Étape de vie: Consolidation patrimoniale · Ancienneté banque: 10 ans
+Foyer: Marié(e) (participation aux acquêts) avec Caroline, 2 enfants (Léa 9 ans, Tom 5 ans), propriétaire avec crédit (résidence ~ 459 k€).
+
+Patrimoine (AUM ~ 477 k€, dette ~ 249 k€):
+- CC 29 k€ · Livret A 23 k€ (plein) · LDDS 7,5 k€
+- AV multisupports 127 k€ (63% fonds €, 37% UC dont Tech US, Europe Value, Matières Prem.) — clause: conjoint puis enfants
+- PEA 45 k€ (Europe Value, France Croissance, Émergents)
+- PER individuel 49 k€ (Small Caps Europe, Obligations IG, ESG Monde) — gros levier fiscal
+- CTO 197 k€ (High Yield, SCPI Pierre Rendement, Diversifié, Santé Monde, Obligations IG)
+- Crédit immo: -249 k€ CRD, taux 1,91%, échéance 2036, mensualité 1 269 €/mois (caution Crédit Logement)
+- Carte Visa Infinite (plafond 15 k€)
+
+Projets déclarés:
+- Études des enfants — horizon 2 ans, cible 25 k€, priorité HAUTE
+- Préparation retraite — horizon 4 ans, cible 10 k€, priorité moyenne
+- Investissement locatif — horizon 1 an, cible 500 k€, priorité basse mais récurrent
+
+Conseiller: Nadia CHEVALIER (agence Lille Grand Place) · Canal préféré: Web`;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -60,7 +76,7 @@ Règles:
 - Français uniquement, ton professionnel et précis (banque privée)
 - Chaque suggestion: titre (5-8 mots) + corps (max 22 mots)
 - Privilégie les suggestions liées au DERNIER échange du transcript
-- Évite les généralités — sois spécifique au contexte de Mme Laurent`;
+- Évite les généralités — sois spécifique au contexte de M. Marc Girard (profession libérale, 2 enfants jeunes, projet locatif récurrent, PER à saturer, AV à arbitrer)`;
 
   const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
     method: "POST",
