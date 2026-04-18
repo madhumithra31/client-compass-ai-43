@@ -247,6 +247,7 @@ function Meeting() {
 
 function ClientCard({ onOpenMindmap }: { onOpenMindmap: () => void }) {
   const c = currentClient;
+  const topProjects = c.projects.slice(0, 3);
   return (
     <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
       <div className="flex items-center gap-4">
@@ -256,6 +257,9 @@ function ClientCard({ onOpenMindmap }: { onOpenMindmap: () => void }) {
         <div className="min-w-0">
           <h3 className="font-display text-xl font-semibold leading-tight text-foreground">{c.name}</h3>
           <p className="mt-0.5 text-sm text-muted-foreground">{c.id} · {c.segment}</p>
+          {c.profession && c.city && (
+            <p className="mt-0.5 text-xs text-muted-foreground">{c.profession} · {c.city}{c.age ? ` · ${c.age} ans` : ""}</p>
+          )}
         </div>
       </div>
 
@@ -269,9 +273,9 @@ function ClientCard({ onOpenMindmap }: { onOpenMindmap: () => void }) {
       <dl className="mt-6 space-y-3.5 text-sm">
         <Row icon={<Briefcase className="h-4 w-4" />} label="AUM" value={c.aum} />
         <Row icon={<Tag className="h-4 w-4" />} label="Profil de risque" value={c.riskProfile} />
-        <Row icon={<Calendar className="h-4 w-4" />} label="Conseiller" value={c.rm} />
-        <Row icon={<Mail className="h-4 w-4" />} label="Email" value={c.email} />
-        <Row icon={<Phone className="h-4 w-4" />} label="Téléphone" value={c.phone} />
+        <Row icon={<Calendar className="h-4 w-4" />} label="Conseiller" value={c.rm ?? "—"} />
+        <Row icon={<Mail className="h-4 w-4" />} label="Email" value={c.email ?? "—"} />
+        <Row icon={<Phone className="h-4 w-4" />} label="Téléphone" value={c.phone || "—"} />
       </dl>
 
       <div className="mt-5 flex flex-wrap gap-2">
@@ -279,6 +283,46 @@ function ClientCard({ onOpenMindmap }: { onOpenMindmap: () => void }) {
           <span key={t} className="rounded-full bg-accent px-3 py-1 text-xs font-medium text-accent-foreground">{t}</span>
         ))}
       </div>
+
+      {c.family && (
+        <div className="mt-5 border-t border-border pt-4">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Foyer</p>
+          <p className="mt-2 text-sm text-foreground">
+            {c.family.status}
+            {c.family.spouse ? ` · avec ${c.family.spouse}` : ""}
+            {c.family.childrenAges.length > 0 ? ` · ${c.family.childrenAges.length} enfant${c.family.childrenAges.length > 1 ? "s" : ""} (${c.family.childrenAges.join(", ")} ans)` : ""}
+          </p>
+          {c.family.housing && (
+            <p className="mt-1 text-xs text-muted-foreground">{c.family.housing}{c.family.residenceValue ? ` · résidence estimée ${Math.round(c.family.residenceValue / 1000)} k€` : ""}</p>
+          )}
+        </div>
+      )}
+
+      {topProjects.length > 0 && (
+        <div className="mt-5 border-t border-border pt-4">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Projets déclarés</p>
+          <ul className="mt-3 space-y-2 text-sm">
+            {topProjects.map((p, i) => (
+              <li key={i} className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="truncate text-foreground">{p.label}</p>
+                  <p className="text-[11px] text-muted-foreground">
+                    {p.horizonYears != null ? `${p.horizonYears} an${p.horizonYears > 1 ? "s" : ""}` : ""}
+                    {p.targetAmount ? ` · cible ${Math.round(p.targetAmount / 1000)} k€` : ""}
+                  </p>
+                </div>
+                {p.priority && (
+                  <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${
+                    p.priority.toLowerCase() === "haute" ? "bg-destructive/15 text-destructive"
+                    : p.priority.toLowerCase() === "moyenne" ? "bg-warning/15 text-warning-foreground"
+                    : "bg-muted text-muted-foreground"
+                  }`}>{p.priority}</span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div className="mt-5 border-t border-border pt-4">
         <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
@@ -289,8 +333,8 @@ function ClientCard({ onOpenMindmap }: { onOpenMindmap: () => void }) {
             <li key={k.id} className="flex justify-between gap-2">
               <span className="truncate">· {k.label}</span>
               {k.balance != null && (
-                <span className="shrink-0 font-medium text-foreground">
-                  {k.balance >= 1000 ? `${(k.balance / 1000).toFixed(0)} k€` : `${k.balance} €`}
+                <span className={`shrink-0 font-medium ${k.balance < 0 ? "text-destructive" : "text-foreground"}`}>
+                  {Math.abs(k.balance) >= 1000 ? `${(k.balance / 1000).toFixed(0)} k€` : `${Math.round(k.balance)} €`}
                 </span>
               )}
             </li>
