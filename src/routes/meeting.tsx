@@ -400,3 +400,108 @@ function formatTime(s: number) {
   const sec = (s % 60).toString().padStart(2, "0");
   return `${m}:${sec}`;
 }
+
+function DashboardKpis() {
+  const totalAlerts = otherLiveMeetings.reduce((s, m) => s + m.alerts, 0);
+  const avg = otherLiveMeetings.reduce((s, m) => s + m.sentiment, 0) / otherLiveMeetings.length;
+  return (
+    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <Kpi icon={<Activity />} label="Live" value={String(otherLiveMeetings.length)} hint="rendez-vous" />
+      <Kpi icon={<Bell />} label="Alertes" value={String(totalAlerts)} hint="à surveiller" tone="warning" />
+      <Kpi icon={avg > 0.5 ? <TrendingUp /> : <TrendingDown />} label="Sentiment" value={`${Math.round(avg * 100)}%`} hint={avg > 0.5 ? "positif" : "tendu"} tone={avg > 0.5 ? "success" : "warning"} />
+      <Kpi icon={<Users />} label="Clients" value="184" hint="ce mois" />
+    </div>
+  );
+}
+
+function Kpi({ icon, label, value, hint, tone = "default" }: { icon: React.ReactNode; label: string; value: string; hint: string; tone?: "default" | "success" | "warning" }) {
+  const toneClass = tone === "success" ? "text-success" : tone === "warning" ? "text-warning-foreground" : "text-primary";
+  return (
+    <div className="rounded-lg border border-border bg-surface-elevated p-3.5">
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">{label}</p>
+          <p className="mt-1 font-display text-2xl font-semibold text-foreground">{value}</p>
+          <p className="mt-0.5 text-[11px] text-muted-foreground">{hint}</p>
+        </div>
+        <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-accent ${toneClass} [&_svg]:h-3.5 [&_svg]:w-3.5`}>
+          {icon}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function LiveMeetingsTable() {
+  return (
+    <div className="overflow-hidden rounded-lg border border-border">
+      <table className="w-full text-sm">
+        <thead className="bg-muted/50 text-[10px] uppercase tracking-wider text-muted-foreground">
+          <tr>
+            <th className="px-4 py-2.5 text-left font-medium">Client</th>
+            <th className="px-4 py-2.5 text-left font-medium">Chargé d'affaires</th>
+            <th className="px-4 py-2.5 text-left font-medium">Durée</th>
+            <th className="px-4 py-2.5 text-left font-medium">Sentiment</th>
+            <th className="px-4 py-2.5 text-left font-medium">Alertes</th>
+            <th className="px-4 py-2.5" />
+          </tr>
+        </thead>
+        <tbody>
+          {otherLiveMeetings.map((m, i) => (
+            <motion.tr
+              key={m.id}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.04 }}
+              className="border-t border-border hover:bg-accent/30"
+            >
+              <td className="px-4 py-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-primary text-[11px] font-semibold text-primary-foreground">
+                    {m.client.split(" ").slice(-1)[0][0]}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="truncate font-medium text-foreground">{m.client}</div>
+                    {m.live && <div className="text-[10px] text-success">● Suivi par vous</div>}
+                  </div>
+                </div>
+              </td>
+              <td className="px-4 py-3 text-muted-foreground">{m.rm}</td>
+              <td className="px-4 py-3 font-mono text-xs text-foreground">{m.duration}</td>
+              <td className="px-4 py-3">
+                <MiniSentiment value={m.sentiment} />
+              </td>
+              <td className="px-4 py-3">
+                {m.alerts > 0 ? (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-warning/15 px-2 py-0.5 text-[11px] font-medium text-warning-foreground">
+                    <AlertTriangle className="h-3 w-3" /> {m.alerts}
+                  </span>
+                ) : (
+                  <span className="text-xs text-muted-foreground">—</span>
+                )}
+              </td>
+              <td className="px-4 py-3 text-right">
+                <button className="inline-flex items-center gap-1 text-[11px] font-medium text-primary hover:underline">
+                  Rejoindre <ArrowRight className="h-3 w-3" />
+                </button>
+              </td>
+            </motion.tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function MiniSentiment({ value }: { value: number }) {
+  const pct = Math.round(value * 100);
+  const color = value > 0.6 ? "bg-success" : value > 0.4 ? "bg-warning" : "bg-destructive";
+  return (
+    <div className="flex items-center gap-2">
+      <div className="h-1.5 w-16 overflow-hidden rounded-full bg-muted">
+        <div className={`h-full ${color}`} style={{ width: `${pct}%` }} />
+      </div>
+      <span className="text-[11px] font-medium text-foreground">{pct}%</span>
+    </div>
+  );
+}
