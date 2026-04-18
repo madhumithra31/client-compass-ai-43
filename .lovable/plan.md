@@ -1,48 +1,75 @@
 
 
-## Two small fixes
+## Current state
 
-### 1. KPI cards — reduce bold value size to prevent wrapping
+- `/dashboard` already exists but is the "Cockpit Manager" — it shows live meetings from `otherLiveMeetings` (4 fake parallel sessions). It is NOT analytics over the client portfolio.
+- We have 10 fully-modeled clients in `clients` (`src/lib/mock-data.ts`), each with: `aum`, `netWorth`, `totalAssets`, `totalDebt`, `annualRevenue`, `tmi`, `equipmentScore`, `segment`, `archetype`, `rm`, `agency`, `riskProfile`, `lifeStage`, `age`, `contracts[]` (with `family` + `balance` + `allocFondsEuro`/`allocUC` + `positions[]` carrying `assetClass`/`geo`/`sector`), `projects[]`, `recentEvents[]`.
+- That's plenty for a real portfolio-level dashboard — no backend, no new data needed.
 
-In the screenshot, "229 k€", "139 k€" and "10.3 ans" wrap onto 2 lines because `text-2xl` + the icon column leaves too little room at the current panel width (~430px column → ~200px per tile in 2-col layout).
+## Proposal — new `/portfolio` route: "Portfolio Overview"
 
-**Change in `src/routes/meeting.tsx` (`KpiTile`, line 586):**
-- Value: `text-2xl` → `text-xl`
-- Add `whitespace-nowrap` to keep the number + unit on one line
-- Add `leading-tight` so spacing doesn't feel cramped after shrinking
-- Tighten the icon box from `h-8 w-8` → `h-7 w-7` to claw back a bit of horizontal room
+A separate route (keeps `/dashboard` live-meeting cockpit intact). New file `src/routes/portfolio.tsx`. Add a third entry on the home page next to "Démarrer un rendez-vous" / "Cockpit Manager".
 
-That's all that's needed visually — the labels and hints already fit fine.
+### Layout (single scrollable page, max-w-7xl)
 
-### 2. CopilotPanel — remove Suggestions tab, rename "Co-pilote AI"
+**1. Hero KPI strip (6 tiles)** — aggregate across all clients
+- Total AUM (sum `totalAssets`)
+- Total Net Worth (sum `netWorth`)
+- Active Clients (count) + avg seniority
+- Avg Equipment Score /10 (with progress bar)
+- Total Debt under management (sum `totalDebt`)
+- High-priority projects in pipeline (count where `priority === "Haute"`) + total target €
 
-In `src/components/CopilotPanel.tsx`:
+**2. Two-column row — segmentation**
+- **Donut: Clients by Segment** (Banque de Détail vs Premier vs ...) — count + % AUM share
+- **Donut: Clients by Risk Profile** (Conservative / Balanced / Dynamic / Aggressive)
 
-- **Remove the Suggestions tab entirely**: delete the `tab` state, both `TabBtn`s, and the entire `tab === "suggest" ? (...) : (...)` ternary — keep only the "Demander" (chat) view as the panel's sole content.
-- **Remove all suggestion plumbing** since it's no longer used: `suggestions` state, `loadingSuggest`, `lastSuggestLenRef`, the auto-fetch `useEffect` on transcript, `fetchSuggestions()`, `update()`, `active`/`sortedActive`, plus the now-unused components `SuggestionCard`, `EmptyState`, and `TYPE_META`. Drop the `Suggestion` type export, and the unused lucide imports (`Lightbulb`, `HelpCircle`, `MessageCircle`, `AlertOctagon`, `Package`, `ListTodo`, `Check`, `X`, `Lightbulb`) and `quickAgent` from `@/lib/copilot-api` — keep only `askAgent`.
-- **Rename "Co-pilote AI" → "Ask AI"** in the header. Subtitle update: "Questions contextuelles sur le client" (keeps tone consistent with the rest of the French UI but flags the action). Also drop the now-meaningless `<TabBtn>` row since there's only one view.
-- Keep the live indicator badge, the chat scroll fix, markdown rendering, preset questions, and the textarea/send form — all unchanged.
+**3. Asset allocation aggregated**
+- **Stacked horizontal bar**: aggregate balance by contract `family` (Compte, Épargne réglementée, Assurance-vie, PER, Crédit, etc.) with €amount + % labels
+- **Donut: Aggregate position breakdown** by `assetClass` (Fonds €, Actions, Obligations, Immobilier...) computed from all `positions[]`
 
-### Naming options for the rename
+**4. Top tables (two side-by-side)**
+- **Top 5 clients by AUM** — name, segment, RM, AUM, equipment score, link to `/meeting?client=...`
+- **Top RMs by AUM under management** — RM name, # clients, total AUM, avg equipment score
 
-I'll go with **"Ask AI"** unless you prefer another. Quick alternatives if you want to swap:
-- "Ask AI" (recommended — short, matches the only remaining action)
-- "Client Assistant"
-- "AI Advisor"
-- "Smart Assist"
+**5. Geographic & demographic breakdown**
+- Bar chart: clients by `agency`
+- Bar chart: clients by `lifeStage` (Début de carrière, Vie de famille, Préparation retraite, Retraite, …)
 
-If you want a different name, tell me in your next message and I'll use that instead of "Ask AI".
+**6. Activity & opportunity signals (computed across portfolio)**
+- Recent activity feed: last 8 events across ALL clients (sorted by date desc), color-coded by `criticality`, with client avatar + link
+- Opportunity panel — counts of:
+  - Clients with `tmi >= 30` and no PER contract (tax optimization candidates)
+  - Clients with `equipmentScore <= 4` (under-equipped)
+  - Contracts maturing within 12 months (sum balance)
+  - Saturated Livret A holders (`balance / ceiling > 0.85`)
 
-## Files touched
+All charts are **inline SVG / divs with Tailwind** (donuts as SVG arcs, bars as flex divs) — same pattern as the existing meeting page, no new charting library. We already have `framer-motion` and `lucide-react`.
 
-- `src/routes/meeting.tsx` — `KpiTile` styling only (~3 line changes)
-- `src/components/CopilotPanel.tsx` — strip out suggestions logic + UI, rename header (~150 lines deleted, ~5 changed)
+### Computation
 
-No new dependencies. No backend changes. The `Suggestion` type isn't imported anywhere else so removing it is safe.
+A single `useMemo` at the top of the component computes all aggregates from `clientList` once. Pure helpers (`groupBy`, `sumBy`, `topN`) defined locally in the file. ~150 lines of helpers, ~400 lines of JSX.
+
+### Navigation wiring
+
+- Add `/portfolio` link in `src/routes/index.tsx` hero section as a third button "Vue Portefeuille".
+- Add a "Portfolio" link in the `/meeting` and `/dashboard` headers next to "← Accueil" so the manager can hop between live cockpit and aggregate view.
+- Each client row in the Top Clients table links to `/meeting` (we already do that pattern in `dashboard.tsx`).
+
+### Naming
+
+I'll call the route **"Portfolio Overview"** in English to match "Ask AI" / your recent direction, with French sub-labels for tile copy to stay consistent with the rest of the app. Tell me if you'd rather it be fully French ("Vue Portefeuille") — easy swap.
+
+## Files
+
+- `src/routes/portfolio.tsx` — NEW (~550 lines, single file, no new deps)
+- `src/routes/index.tsx` — add a third CTA button to the hero
+- `src/routes/meeting.tsx` + `src/routes/dashboard.tsx` — add a header link to `/portfolio`
 
 ## Out of scope
 
-- Re-adding suggestions later (we can bring them back from git history if needed).
-- Restyling the chat bubbles or preset buttons.
-- Translating the panel header to English beyond the title rename.
+- Filters / date range pickers (read-only snapshot for now — can add a "by RM" filter later if you want).
+- Drill-down pages per segment / per RM (would be a follow-up).
+- Real backend aggregation (everything reads from the in-memory mock — same model as the rest of the app).
+- Touching the existing `/dashboard` live-meeting cockpit — kept as-is so we don't lose the supervisor flow.
 
