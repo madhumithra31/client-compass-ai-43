@@ -76,7 +76,7 @@ Règles:
 - Français uniquement, ton professionnel et précis (banque privée)
 - Chaque suggestion: titre (5-8 mots) + corps (max 22 mots)
 - Privilégie les suggestions liées au DERNIER échange du transcript
-- Évite les généralités — sois spécifique au contexte de Mme Laurent`;
+- Évite les généralités — sois spécifique au contexte de M. Marc Girard (profession libérale, 2 enfants jeunes, projet locatif récurrent, PER à saturer, AV à arbitrer)`;
 
   const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
     method: "POST",
