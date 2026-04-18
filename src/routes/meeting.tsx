@@ -3,7 +3,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 // HMR refresh trigger
 import { motion, AnimatePresence } from "framer-motion";
 import { Toaster } from "sonner";
-import { Logo } from "@/components/Logo";
 import { CopilotPanel } from "@/components/CopilotPanel";
 import { ClientMindmapModal } from "@/components/ClientMindmapModal";
 import { clients, clientList, defaultClientId, scriptedTranscript, type TranscriptLine, type Client, type Contract, type Position, type Project, type ClientEvent } from "@/lib/mock-data";
@@ -11,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Mic, MicOff, Pause, Play, Sparkles, AlertTriangle, CheckCircle2, Mail,
-  Phone, Briefcase, Calendar, Tag, ArrowLeft, Loader2, Users, Network,
+  Phone, Briefcase, Calendar, Tag, Loader2, Users, Network,
   Wallet, TrendingUp, Award, Clock, ChevronDown, ChevronRight, Target, Home, Heart, Activity as ActivityIcon, Lightbulb,
 } from "lucide-react";
 

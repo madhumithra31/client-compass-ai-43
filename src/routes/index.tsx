@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { Logo } from "@/components/Logo";
+
 import { ArrowRight, Mic, BarChart3, Bell, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/")({

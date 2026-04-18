@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Logo } from "@/components/Logo";
+
 import { otherLiveMeetings } from "@/lib/mock-data";
 import { motion } from "framer-motion";
 import { ArrowRight, AlertTriangle, TrendingUp, TrendingDown, Users, Activity, Bell } from "lucide-react";

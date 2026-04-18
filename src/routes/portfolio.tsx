@@ -1,10 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { useMemo } from "react";
-import { Logo } from "@/components/Logo";
 import { clientList, type Client } from "@/lib/mock-data";
 import {
-  ArrowLeft, Wallet, TrendingUp, Users, Award, AlertTriangle,
+  Wallet, TrendingUp, Users, Award, AlertTriangle,
   Target, Briefcase, MapPin, Activity, Sparkles, ArrowRight,
   PiggyBank, ShieldAlert, Calendar,
 } from "lucide-react";
