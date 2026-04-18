@@ -22,20 +22,7 @@ function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-20 border-b border-border bg-surface/80 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-6">
-            <Logo />
-            <span className="hidden text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground md:inline">
-              · Cockpit Manager
-            </span>
-          </div>
-          <nav className="flex items-center gap-4 text-xs">
-            <Link to="/portfolio" className="text-muted-foreground hover:text-foreground">Portfolio</Link>
-            <Link to="/" className="text-muted-foreground hover:text-foreground">← Accueil</Link>
-          </nav>
-        </div>
-      </header>
+      {/* Header removed — global AppNav is rendered in __root.tsx */}
 
       <main className="mx-auto max-w-7xl px-6 py-10">
         <div className="mb-10">
