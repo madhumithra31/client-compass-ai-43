@@ -27,7 +27,7 @@ const TYPE_META: Record<Suggestion["type"], { label: string; Icon: React.Compone
   action:        { label: "Action de suivi",      Icon: ListTodo },
 };
 
-export function CopilotPanel({ transcript, recording }: { transcript: string; recording: boolean }) {
+export function CopilotPanel({ transcript, recording, clientId, clientName }: { transcript: string; recording: boolean; clientId?: string; clientName?: string }) {
   const [tab, setTab] = useState<"suggest" | "ask">("suggest");
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [loadingSuggest, setLoadingSuggest] = useState(false);
