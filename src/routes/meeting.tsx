@@ -39,6 +39,8 @@ function Meeting() {
   const [insights, setInsights] = useState<Insight[]>([]);
   const [analyzing, setAnalyzing] = useState(false);
   const [mindmapOpen, setMindmapOpen] = useState(false);
+  const [selectedClientId, setSelectedClientId] = useState<string>(defaultClientId);
+  const client = clients[selectedClientId] ?? clients[defaultClientId];
 
   const idxRef = useRef(0);
   const transcriptEndRef = useRef<HTMLDivElement>(null);
