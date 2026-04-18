@@ -100,8 +100,8 @@ export function CopilotPanel({ transcript, recording, clientId, clientName }: { 
     }
   }
 
-  async function sendChat() {
-    const q = chatInput.trim();
+  async function sendChat(override?: string) {
+    const q = (override ?? chatInput).trim();
     if (!q || chatBusy) return;
     const newHistory = [...chat, { role: "user" as const, content: q }];
     setChat(newHistory);
@@ -206,18 +206,22 @@ export function CopilotPanel({ transcript, recording, clientId, clientName }: { 
             {chat.length === 0 && (
               <div className="space-y-3">
                 <p className="text-xs text-muted-foreground">
-                  Posez n'importe quelle question pendant le rendez-vous. Le co-pilote a accès au contexte client et à la transcription en cours.
+                  {clientName
+                    ? `Ask a quick question about ${clientName} — the co-pilot already has their full profile and the live transcript.`
+                    : "Select a client to ask context-aware questions. The co-pilot has access to their full profile and the live transcript."}
                 </p>
                 <div className="space-y-1.5">
                   {[
-                    "Quelle est l'exposition ESG actuelle de Mme Laurent ?",
-                    "Rédige un email de suivi avec les points clés.",
-                    "Comment expliquer la donation-partage simplement ?",
+                    "Did this client earn money last year?",
+                    "Is my client financially healthy?",
+                    "What should I know before this meeting?",
+                    "Which product might suit this client?",
                   ].map((q) => (
                     <button
                       key={q}
-                      onClick={() => setChatInput(q)}
-                      className="block w-full rounded-md border border-border bg-surface-elevated px-3 py-2 text-left text-xs text-foreground transition-colors hover:border-primary/40 hover:bg-accent"
+                      onClick={() => void sendChat(q)}
+                      disabled={chatBusy}
+                      className="block w-full rounded-md border border-border bg-surface-elevated px-3 py-2 text-left text-xs text-foreground transition-colors hover:border-primary/40 hover:bg-accent disabled:opacity-50"
                     >
                       {q}
                     </button>
