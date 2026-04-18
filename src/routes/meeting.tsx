@@ -196,59 +196,23 @@ function Meeting() {
           <InsightsCard insights={insights} loading={analyzing && insights.length === 0} hasTranscript={lines.length > 0} />
         </aside>
 
-        {/* CENTER — Transcript */}
+        {/* CENTER — Cockpit dashboard (replaces transcription) */}
         <section className="flex h-[calc(100vh-140px)] flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm">
           <div className="flex items-center justify-between border-b border-border px-5 py-3">
             <div>
-              <h2 className="font-display text-lg font-semibold text-foreground">Transcription live</h2>
+              <h2 className="font-display text-lg font-semibold text-foreground">Cockpit de supervision</h2>
               <p className="text-xs text-muted-foreground">
-                {recording ? (paused ? "En pause" : "Écoute en cours · diarization active") : "Cliquez sur Démarrer pour lancer la simulation"}
+                Vue temps réel des rendez-vous patrimoniaux en cours
               </p>
             </div>
-            {analyzing && (
-              <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-                <Loader2 className="h-3 w-3 animate-spin" /> Analyse AI…
-              </span>
-            )}
+            <span className="flex items-center gap-2 text-xs text-muted-foreground">
+              <span className="h-2 w-2 rounded-full bg-success pulse-ring" />
+              live
+            </span>
           </div>
-          <div className="flex-1 space-y-4 overflow-y-auto px-5 py-5">
-            {lines.length === 0 && (
-              <div className="flex h-full flex-col items-center justify-center text-center">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-accent text-primary">
-                  <Mic className="h-7 w-7" />
-                </div>
-                <p className="mt-4 max-w-xs text-sm text-muted-foreground">
-                  Démarrez l'enregistrement pour voir la transcription apparaître en temps réel.
-                </p>
-              </div>
-            )}
-            <AnimatePresence initial={false}>
-              {lines.map((line, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className={`flex gap-3 ${line.speaker === "RM" ? "" : "flex-row-reverse"}`}
-                >
-                  <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold ${
-                    line.speaker === "RM" ? "bg-accent text-primary" : "bg-gradient-primary text-primary-foreground"
-                  }`}>
-                    {line.speaker === "RM" ? "AM" : "CL"}
-                  </div>
-                  <div className={`max-w-[78%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
-                    line.speaker === "RM"
-                      ? "rounded-tl-sm bg-muted text-foreground"
-                      : "rounded-tr-sm bg-primary/10 text-foreground"
-                  }`}>
-                    <div className="mb-0.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-                      {line.speaker === "RM" ? "Antoine Mercier · Conseiller" : "Mme Laurent · Client"}
-                    </div>
-                    {line.text}
-                  </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-            <div ref={transcriptEndRef} />
+          <div className="flex-1 space-y-5 overflow-y-auto px-5 py-5">
+            <DashboardKpis />
+            <LiveMeetingsTable />
           </div>
         </section>
 
