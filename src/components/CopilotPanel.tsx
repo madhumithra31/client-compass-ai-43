@@ -241,9 +241,7 @@ export function CopilotPanel({ transcript, recording, clientId, clientName }: { 
               </div>
             ))}
             {chatBusy && (
-              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <Loader2 className="h-3 w-3 animate-spin" /> Le co-pilote réfléchit…
-              </div>
+              <ChatThinking />
             )}
             <div ref={chatEndRef} />
           </div>
