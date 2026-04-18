@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { supabase } from "@/integrations/supabase/client";
+import { askAgent, quickAgent } from "@/lib/copilot-api";
 import { toast } from "sonner";
 import {
   Sparkles, Send, Loader2, Check, X, MessageSquare, Lightbulb,
