@@ -37,6 +37,7 @@ function Meeting() {
   const [alerts, setAlerts] = useState<AlertItem[]>([]);
   const [insights, setInsights] = useState<Insight[]>([]);
   const [analyzing, setAnalyzing] = useState(false);
+  const [mindmapOpen, setMindmapOpen] = useState(false);
 
   const idxRef = useRef(0);
   const transcriptEndRef = useRef<HTMLDivElement>(null);
