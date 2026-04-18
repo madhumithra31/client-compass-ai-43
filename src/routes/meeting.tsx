@@ -6,12 +6,13 @@ import { Toaster } from "sonner";
 import { Logo } from "@/components/Logo";
 import { CopilotPanel } from "@/components/CopilotPanel";
 import { ClientMindmapModal } from "@/components/ClientMindmapModal";
-import { clients, clientList, defaultClientId, scriptedTranscript, otherLiveMeetings, type TranscriptLine, type Client } from "@/lib/mock-data";
+import { clients, clientList, defaultClientId, scriptedTranscript, type TranscriptLine, type Client, type Contract, type Position, type Project, type ClientEvent } from "@/lib/mock-data";
 import { supabase } from "@/integrations/supabase/client";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Mic, MicOff, Pause, Play, Sparkles, AlertTriangle, CheckCircle2, Mail,
-  Phone, Briefcase, Calendar, Tag, ArrowLeft, Loader2, ArrowRight, Activity, Bell, TrendingUp, TrendingDown, Users, Network,
+  Phone, Briefcase, Calendar, Tag, ArrowLeft, Loader2, Users, Network,
+  Wallet, TrendingUp, Award, Clock, ChevronDown, ChevronRight, Target, Home, Heart, Activity as ActivityIcon, Lightbulb,
 } from "lucide-react";
 
 export const Route = createFileRoute("/meeting")({
@@ -238,13 +239,13 @@ function Meeting() {
           <InsightsCard insights={insights} loading={analyzing && insights.length === 0} hasTranscript={lines.length > 0} />
         </aside>
 
-        {/* CENTER — Cockpit dashboard (replaces transcription) */}
+        {/* CENTER — Client 360° workspace */}
         <section className="flex h-[calc(100vh-140px)] flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm">
           <div className="flex items-center justify-between border-b border-border px-5 py-3">
             <div>
-              <h2 className="font-display text-lg font-semibold text-foreground">Cockpit de supervision</h2>
+              <h2 className="font-display text-lg font-semibold text-foreground">Client 360° · {client.name}</h2>
               <p className="text-xs text-muted-foreground">
-                Vue temps réel des rendez-vous patrimoniaux en cours
+                Vue détaillée du patrimoine, des projets et de l'activité du client
               </p>
             </div>
             <span className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -253,8 +254,8 @@ function Meeting() {
             </span>
           </div>
           <div className="flex-1 space-y-5 overflow-y-auto px-5 py-5">
-            <DashboardKpis />
-            <LiveMeetingsTable />
+            <ClientKpiStrip client={client} />
+            <ClientWorkspaceTabs client={client} />
           </div>
         </section>
 
@@ -516,20 +517,66 @@ function formatTime(s: number) {
   return `${m}:${sec}`;
 }
 
-function DashboardKpis() {
-  const totalAlerts = otherLiveMeetings.reduce((s, m) => s + m.alerts, 0);
-  const avg = otherLiveMeetings.reduce((s, m) => s + m.sentiment, 0) / otherLiveMeetings.length;
+// =====================================================================
+// CLIENT 360° WORKSPACE
+// =====================================================================
+
+function fmtEur(n: number | null | undefined, opts: { compact?: boolean } = {}) {
+  if (n == null || isNaN(n)) return "—";
+  const abs = Math.abs(n);
+  if (opts.compact || abs >= 1000) {
+    if (abs >= 1_000_000) return `${(n / 1_000_000).toFixed(abs >= 10_000_000 ? 1 : 2)} M€`;
+    if (abs >= 1000) return `${Math.round(n / 1000)} k€`;
+  }
+  return `${Math.round(n)} €`;
+}
+
+function fmtDateFr(s: string | null | undefined) {
+  if (!s) return "—";
+  const d = new Date(s);
+  if (isNaN(d.getTime())) return s;
+  return d.toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" });
+}
+
+function ClientKpiStrip({ client }: { client: Client }) {
+  const tmiBadge = client.tmi != null ? `${client.tmi}%` : null;
+  const equipPct = client.equipmentScore != null ? (client.equipmentScore / 10) * 100 : 0;
   return (
     <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-      <Kpi icon={<Activity />} label="Live" value={String(otherLiveMeetings.length)} hint="rendez-vous" />
-      <Kpi icon={<Bell />} label="Alertes" value={String(totalAlerts)} hint="à surveiller" tone="warning" />
-      <Kpi icon={avg > 0.5 ? <TrendingUp /> : <TrendingDown />} label="Sentiment" value={`${Math.round(avg * 100)}%`} hint={avg > 0.5 ? "positif" : "tendu"} tone={avg > 0.5 ? "success" : "warning"} />
-      <Kpi icon={<Users />} label="Clients" value="184" hint="ce mois" />
+      <KpiTile
+        icon={<Wallet />}
+        label="Patrimoine net"
+        value={fmtEur(client.netWorth, { compact: true })}
+        hint={`Actifs ${fmtEur(client.totalAssets, { compact: true })} · Dette ${fmtEur(client.totalDebt, { compact: true })}`}
+      />
+      <KpiTile
+        icon={<TrendingUp />}
+        label="Revenus annuels"
+        value={fmtEur(client.annualRevenue, { compact: true })}
+        hint={tmiBadge ? `Tranche marginale ${tmiBadge}` : "TMI non renseignée"}
+        tone="success"
+      />
+      <KpiTile
+        icon={<Award />}
+        label="Équipement"
+        value={`${client.equipmentScore ?? "—"}/10`}
+        hint={`${client.contracts.length} contrats actifs`}
+        progress={equipPct}
+      />
+      <KpiTile
+        icon={<Clock />}
+        label="Ancienneté"
+        value={client.seniorityYears != null ? `${client.seniorityYears.toFixed(1)} ans` : "—"}
+        hint={`Client depuis ${fmtDateFr(client.clientSinceDate)}`}
+      />
     </div>
   );
 }
 
-function Kpi({ icon, label, value, hint, tone = "default" }: { icon: React.ReactNode; label: string; value: string; hint: string; tone?: "default" | "success" | "warning" }) {
+function KpiTile({ icon, label, value, hint, tone = "default", progress }: {
+  icon: React.ReactNode; label: string; value: string; hint: string;
+  tone?: "default" | "success" | "warning"; progress?: number;
+}) {
   const toneClass = tone === "success" ? "text-success" : tone === "warning" ? "text-warning-foreground" : "text-primary";
   return (
     <div className="rounded-lg border border-border bg-surface-elevated p-3.5">
@@ -543,80 +590,444 @@ function Kpi({ icon, label, value, hint, tone = "default" }: { icon: React.React
           {icon}
         </div>
       </div>
+      {progress != null && (
+        <div className="mt-2.5 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+          <div className="h-full bg-gradient-primary transition-all" style={{ width: `${Math.min(100, Math.max(0, progress))}%` }} />
+        </div>
+      )}
     </div>
   );
 }
 
-function LiveMeetingsTable() {
+type TabKey = "patrimoine" | "projets" | "activite" | "risques";
+
+function ClientWorkspaceTabs({ client }: { client: Client }) {
+  const [tab, setTab] = useState<TabKey>("patrimoine");
+  const tabs: { key: TabKey; label: string; icon: React.ReactNode }[] = [
+    { key: "patrimoine", label: "Patrimoine", icon: <Wallet className="h-3.5 w-3.5" /> },
+    { key: "projets", label: "Projets & Vie", icon: <Target className="h-3.5 w-3.5" /> },
+    { key: "activite", label: "Activité récente", icon: <ActivityIcon className="h-3.5 w-3.5" /> },
+    { key: "risques", label: "Risques & Opportunités", icon: <Lightbulb className="h-3.5 w-3.5" /> },
+  ];
   return (
-    <div className="overflow-hidden rounded-lg border border-border">
-      <table className="w-full text-sm">
-        <thead className="bg-muted/50 text-[10px] uppercase tracking-wider text-muted-foreground">
-          <tr>
-            <th className="px-4 py-2.5 text-left font-medium">Client</th>
-            <th className="px-4 py-2.5 text-left font-medium">Chargé d'affaires</th>
-            <th className="px-4 py-2.5 text-left font-medium">Durée</th>
-            <th className="px-4 py-2.5 text-left font-medium">Sentiment</th>
-            <th className="px-4 py-2.5 text-left font-medium">Alertes</th>
-            <th className="px-4 py-2.5" />
-          </tr>
-        </thead>
-        <tbody>
-          {otherLiveMeetings.map((m, i) => (
-            <motion.tr
-              key={m.id}
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.04 }}
-              className="border-t border-border hover:bg-accent/30"
-            >
-              <td className="px-4 py-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-primary text-[11px] font-semibold text-primary-foreground">
-                    {m.client.split(" ").slice(-1)[0][0]}
+    <div>
+      <div className="flex flex-wrap gap-1 rounded-lg bg-muted/60 p-1">
+        {tabs.map((t) => (
+          <button
+            key={t.key}
+            onClick={() => setTab(t.key)}
+            className={`inline-flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-3 py-1.5 text-xs font-medium transition-all ${
+              tab === t.key ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {t.icon} {t.label}
+          </button>
+        ))}
+      </div>
+      <div className="mt-4">
+        {tab === "patrimoine" && <PatrimoineTab client={client} />}
+        {tab === "projets" && <ProjetsTab client={client} />}
+        {tab === "activite" && <ActiviteTab client={client} />}
+        {tab === "risques" && <RisquesTab client={client} />}
+      </div>
+    </div>
+  );
+}
+
+// ----- Patrimoine -----
+
+function PatrimoineTab({ client }: { client: Client }) {
+  const buckets = useMemo(() => computeAssetBuckets(client), [client]);
+  const total = buckets.reduce((s, b) => s + b.value, 0);
+  const [openId, setOpenId] = useState<string | null>(null);
+
+  const sortedContracts = [...client.contracts].sort((a, b) => (b.balance ?? 0) - (a.balance ?? 0));
+
+  return (
+    <div className="space-y-5">
+      {/* Allocation bar */}
+      <div className="rounded-lg border border-border bg-surface-elevated p-4">
+        <div className="mb-3 flex items-center justify-between">
+          <h3 className="text-sm font-semibold text-foreground">Allocation du patrimoine</h3>
+          <span className="text-xs text-muted-foreground">{fmtEur(total, { compact: true })} brut</span>
+        </div>
+        <div className="flex h-3 w-full overflow-hidden rounded-full bg-muted">
+          {buckets.map((b) => (
+            <div key={b.label} className={b.color} style={{ width: `${total > 0 ? (b.value / total) * 100 : 0}%` }} title={`${b.label} · ${fmtEur(b.value)}`} />
+          ))}
+        </div>
+        <div className="mt-3 grid grid-cols-2 gap-2 text-xs sm:grid-cols-3 lg:grid-cols-5">
+          {buckets.map((b) => (
+            <div key={b.label} className="flex items-center gap-1.5">
+              <span className={`h-2 w-2 rounded-full ${b.color}`} />
+              <span className="text-muted-foreground">{b.label}</span>
+              <span className="ml-auto font-medium text-foreground">{total > 0 ? Math.round((b.value / total) * 100) : 0}%</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Contracts table */}
+      <div className="overflow-hidden rounded-lg border border-border">
+        <table className="w-full text-sm">
+          <thead className="bg-muted/50 text-[10px] uppercase tracking-wider text-muted-foreground">
+            <tr>
+              <th className="w-8 px-3 py-2.5" />
+              <th className="px-3 py-2.5 text-left font-medium">Contrat</th>
+              <th className="px-3 py-2.5 text-left font-medium">Famille</th>
+              <th className="px-3 py-2.5 text-right font-medium">Encours</th>
+              <th className="px-3 py-2.5 text-left font-medium">Allocation</th>
+              <th className="px-3 py-2.5 text-left font-medium">Échéance</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sortedContracts.map((c) => (
+              <ContractRow
+                key={c.id}
+                contract={c}
+                open={openId === c.id}
+                onToggle={() => setOpenId(openId === c.id ? null : c.id)}
+              />
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+function ContractRow({ contract, open, onToggle }: { contract: Contract; open: boolean; onToggle: () => void }) {
+  const hasPositions = contract.positions && contract.positions.length > 0;
+  const hasAlloc = contract.allocFondsEuro != null || contract.allocUC != null;
+  const balance = contract.balance ?? 0;
+  return (
+    <>
+      <tr className={`border-t border-border transition-colors ${hasPositions ? "cursor-pointer hover:bg-accent/30" : ""}`} onClick={hasPositions ? onToggle : undefined}>
+        <td className="px-3 py-2.5">
+          {hasPositions ? (
+            open ? <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+          ) : null}
+        </td>
+        <td className="px-3 py-2.5">
+          <div className="font-medium text-foreground">{contract.label}</div>
+          <div className="text-[10px] text-muted-foreground">{contract.id} · ouvert {fmtDateFr(contract.openingDate)}</div>
+        </td>
+        <td className="px-3 py-2.5 text-xs text-muted-foreground">{contract.family ?? "—"}</td>
+        <td className={`px-3 py-2.5 text-right font-medium tabular-nums ${balance < 0 ? "text-destructive" : "text-foreground"}`}>
+          {fmtEur(balance, { compact: true })}
+        </td>
+        <td className="px-3 py-2.5 text-xs text-muted-foreground">
+          {hasAlloc ? (
+            <div className="flex items-center gap-1.5">
+              <div className="flex h-1.5 w-20 overflow-hidden rounded-full bg-muted">
+                <div className="h-full bg-primary" style={{ width: `${contract.allocFondsEuro ?? 0}%` }} />
+                <div className="h-full bg-warning" style={{ width: `${contract.allocUC ?? 0}%` }} />
+              </div>
+              <span className="text-[10px]">€{Math.round(contract.allocFondsEuro ?? 0)} / UC{Math.round(contract.allocUC ?? 0)}</span>
+            </div>
+          ) : contract.rate != null ? (
+            <span>{contract.rate}% taux</span>
+          ) : (
+            <span>—</span>
+          )}
+        </td>
+        <td className="px-3 py-2.5 text-xs text-muted-foreground">{fmtDateFr(contract.maturity)}</td>
+      </tr>
+      {open && hasPositions && (
+        <tr className="border-t border-border bg-muted/20">
+          <td />
+          <td colSpan={5} className="px-3 py-3">
+            <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              {contract.positions.length} position{contract.positions.length > 1 ? "s" : ""}
+            </p>
+            <div className="space-y-1.5">
+              {contract.positions.map((p: Position) => (
+                <div key={p.id} className="flex items-center justify-between gap-3 rounded-md bg-card px-3 py-2 text-xs">
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate font-medium text-foreground">{p.label ?? p.isin}</div>
+                    <div className="text-[10px] text-muted-foreground">{[p.isin, p.assetClass, p.geo].filter(Boolean).join(" · ")}</div>
                   </div>
-                  <div className="min-w-0">
-                    <div className="truncate font-medium text-foreground">{m.client}</div>
-                    {m.live && <div className="text-[10px] text-success">● Suivi par vous</div>}
+                  <div className="text-right tabular-nums">
+                    <div className="font-medium text-foreground">{fmtEur(p.valuation, { compact: true })}</div>
+                    {p.weight != null && <div className="text-[10px] text-muted-foreground">{p.weight.toFixed(1)}%</div>}
                   </div>
                 </div>
-              </td>
-              <td className="px-4 py-3 text-muted-foreground">{m.rm}</td>
-              <td className="px-4 py-3 font-mono text-xs text-foreground">{m.duration}</td>
-              <td className="px-4 py-3">
-                <MiniSentiment value={m.sentiment} />
-              </td>
-              <td className="px-4 py-3">
-                {m.alerts > 0 ? (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-warning/15 px-2 py-0.5 text-[11px] font-medium text-warning-foreground">
-                    <AlertTriangle className="h-3 w-3" /> {m.alerts}
-                  </span>
-                ) : (
-                  <span className="text-xs text-muted-foreground">—</span>
-                )}
-              </td>
-              <td className="px-4 py-3 text-right">
-                <button className="inline-flex items-center gap-1 text-[11px] font-medium text-primary hover:underline">
-                  Rejoindre <ArrowRight className="h-3 w-3" />
-                </button>
-              </td>
-            </motion.tr>
-          ))}
-        </tbody>
-      </table>
+              ))}
+            </div>
+          </td>
+        </tr>
+      )}
+    </>
+  );
+}
+
+function computeAssetBuckets(client: Client) {
+  const buckets = [
+    { label: "Liquidités", color: "bg-sky-400", value: 0 },
+    { label: "Épargne réglementée", color: "bg-emerald-400", value: 0 },
+    { label: "Assurance-vie", color: "bg-violet-400", value: 0 },
+    { label: "Compte-titres / PEA", color: "bg-amber-400", value: 0 },
+    { label: "Retraite", color: "bg-rose-400", value: 0 },
+  ];
+  for (const c of client.contracts) {
+    const bal = c.balance ?? 0;
+    if (bal <= 0) continue;
+    const fam = (c.family ?? "").toLowerCase();
+    if (fam.includes("compte") && !fam.includes("titres")) buckets[0].value += bal;
+    else if (fam.includes("réglement")) buckets[1].value += bal;
+    else if (fam.includes("assurance")) buckets[2].value += bal;
+    else if (fam.includes("titres")) buckets[3].value += bal;
+    else if (fam.includes("retraite")) buckets[4].value += bal;
+    else buckets[0].value += bal;
+  }
+  return buckets;
+}
+
+// ----- Projets & Vie -----
+
+function ProjetsTab({ client }: { client: Client }) {
+  const sorted = [...client.projects].sort((a, b) => (a.horizonYears ?? 99) - (b.horizonYears ?? 99));
+  return (
+    <div className="space-y-5">
+      {/* Family card */}
+      {client.family && (
+        <div className="rounded-lg border border-border bg-surface-elevated p-4">
+          <div className="mb-3 flex items-center gap-2">
+            <Heart className="h-4 w-4 text-primary" />
+            <h3 className="text-sm font-semibold text-foreground">Foyer</h3>
+          </div>
+          <div className="grid gap-3 text-xs sm:grid-cols-2">
+            <FamilyRow label="Situation" value={client.family.status} />
+            <FamilyRow label="Régime matrimonial" value={client.family.matrimonial} />
+            <FamilyRow label="Conjoint" value={client.family.spouse ? `${client.family.spouse}${client.family.spouseAge ? ` (${client.family.spouseAge} ans)` : ""}` : null} />
+            <FamilyRow label="Enfants" value={client.family.childrenAges.length > 0 ? `${client.family.childrenAges.length} (${client.family.childrenAges.join(", ")} ans)` : "Aucun"} />
+            <FamilyRow label="Logement" value={client.family.housing} icon={<Home className="h-3 w-3" />} />
+            <FamilyRow label="Résidence" value={client.family.residenceValue ? `${fmtEur(client.family.residenceValue, { compact: true })}${client.family.residenceYear ? ` (${client.family.residenceYear})` : ""}` : null} />
+          </div>
+        </div>
+      )}
+
+      {/* Projects timeline */}
+      <div>
+        <h3 className="mb-3 text-sm font-semibold text-foreground">Projets déclarés ({sorted.length})</h3>
+        {sorted.length === 0 && (
+          <p className="text-xs text-muted-foreground">Aucun projet déclaré.</p>
+        )}
+        <div className="space-y-2.5">
+          {sorted.map((p, i) => <ProjectItem key={i} project={p} />)}
+        </div>
+      </div>
     </div>
   );
 }
 
-function MiniSentiment({ value }: { value: number }) {
-  const pct = Math.round(value * 100);
-  const color = value > 0.6 ? "bg-success" : value > 0.4 ? "bg-warning" : "bg-destructive";
+function FamilyRow({ label, value, icon }: { label: string; value: string | null; icon?: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-2">
-      <div className="h-1.5 w-16 overflow-hidden rounded-full bg-muted">
-        <div className={`h-full ${color}`} style={{ width: `${pct}%` }} />
-      </div>
-      <span className="text-[11px] font-medium text-foreground">{pct}%</span>
+    <div className="flex items-center justify-between gap-2 border-b border-border/50 pb-1.5 last:border-0 last:pb-0">
+      <span className="flex items-center gap-1.5 text-muted-foreground">{icon}{label}</span>
+      <span className="font-medium text-foreground">{value ?? "—"}</span>
     </div>
   );
+}
+
+function ProjectItem({ project }: { project: Project }) {
+  const priority = (project.priority ?? "").toLowerCase();
+  const accent = priority === "haute" ? "border-l-destructive" : priority === "moyenne" ? "border-l-warning" : "border-l-muted";
+  const horizonLabel = project.horizonYears != null ? `${project.horizonYears} an${project.horizonYears > 1 ? "s" : ""}` : "—";
+  return (
+    <div className={`flex items-center justify-between gap-3 rounded-lg border border-border border-l-4 bg-card px-4 py-3 ${accent}`}>
+      <div className="min-w-0 flex-1">
+        <p className="font-medium text-foreground">{project.label}</p>
+        <p className="mt-0.5 text-[11px] text-muted-foreground">
+          Horizon {horizonLabel}{project.declaredAt ? ` · déclaré le ${fmtDateFr(project.declaredAt)}` : ""}
+        </p>
+      </div>
+      <div className="text-right">
+        <p className="font-display text-base font-semibold text-foreground">{fmtEur(project.targetAmount, { compact: true })}</p>
+        {project.priority && (
+          <span className={`mt-0.5 inline-block rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider ${
+            priority === "haute" ? "bg-destructive/15 text-destructive"
+            : priority === "moyenne" ? "bg-warning/15 text-warning-foreground"
+            : "bg-muted text-muted-foreground"
+          }`}>{project.priority}</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ----- Activité récente -----
+
+function ActiviteTab({ client }: { client: Client }) {
+  const sorted = [...client.recentEvents].sort((a, b) => {
+    const da = a.date ? new Date(a.date).getTime() : 0;
+    const db = b.date ? new Date(b.date).getTime() : 0;
+    return db - da;
+  });
+  return (
+    <div>
+      <h3 className="mb-3 text-sm font-semibold text-foreground">Historique d'activité ({sorted.length})</h3>
+      {sorted.length === 0 && <p className="text-xs text-muted-foreground">Aucun événement.</p>}
+      <ol className="relative space-y-3 border-l border-border pl-5">
+        {sorted.map((e, i) => <EventItem key={i} event={e} />)}
+      </ol>
+    </div>
+  );
+}
+
+function EventItem({ event }: { event: ClientEvent }) {
+  const crit = (event.criticality ?? "").toLowerCase();
+  const dot = crit.includes("important") || crit.includes("critique") ? "bg-destructive"
+    : crit.includes("suivre") ? "bg-warning"
+    : "bg-primary";
+  return (
+    <li className="relative">
+      <span className={`absolute -left-[26px] top-1.5 h-2.5 w-2.5 rounded-full ring-2 ring-card ${dot}`} />
+      <div className="rounded-lg border border-border bg-card px-4 py-2.5">
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-sm font-medium text-foreground">{event.category ?? event.type}</p>
+          <span className="font-mono text-[10px] text-muted-foreground">{fmtDateFr(event.date)}</span>
+        </div>
+        <p className="mt-0.5 text-xs text-muted-foreground">
+          {event.description ?? event.type}
+          {event.channel ? ` · ${event.channel}` : ""}
+        </p>
+        {event.criticality && (
+          <span className={`mt-1.5 inline-block rounded-full px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider ${
+            crit.includes("important") || crit.includes("critique") ? "bg-destructive/15 text-destructive"
+            : crit.includes("suivre") ? "bg-warning/15 text-warning-foreground"
+            : "bg-muted text-muted-foreground"
+          }`}>{event.criticality}</span>
+        )}
+      </div>
+    </li>
+  );
+}
+
+// ----- Risques & Opportunités -----
+
+function RisquesTab({ client }: { client: Client }) {
+  const signals = useMemo(() => computeSignals(client), [client]);
+  return (
+    <div className="space-y-3">
+      {signals.length === 0 && (
+        <p className="text-xs text-muted-foreground">Aucun signal détecté pour ce client.</p>
+      )}
+      {signals.map((s, i) => (
+        <div key={i} className={`rounded-lg border p-4 ${
+          s.tone === "risk" ? "border-destructive/30 bg-destructive/5"
+          : s.tone === "opportunity" ? "border-success/30 bg-success/5"
+          : "border-warning/40 bg-warning/5"
+        }`}>
+          <div className="flex items-start gap-2.5">
+            {s.tone === "risk" ? <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
+              : s.tone === "opportunity" ? <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-success" />
+              : <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-warning-foreground" />}
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2">
+                <p className="text-sm font-semibold text-foreground">{s.title}</p>
+                <span className={`rounded-full px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider ${
+                  s.tone === "risk" ? "bg-destructive/15 text-destructive"
+                  : s.tone === "opportunity" ? "bg-success/15 text-success"
+                  : "bg-warning/15 text-warning-foreground"
+                }`}>{s.tone === "risk" ? "Risque" : s.tone === "opportunity" ? "Opportunité" : "À suivre"}</span>
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground">{s.detail}</p>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+type Signal = { title: string; detail: string; tone: "risk" | "opportunity" | "watch" };
+
+function computeSignals(client: Client): Signal[] {
+  const signals: Signal[] = [];
+  const totalAssets = client.totalAssets || client.contracts.reduce((s, c) => s + Math.max(0, c.balance ?? 0), 0);
+
+  // Liquidity
+  const cash = client.contracts.filter((c) => (c.family ?? "").toLowerCase().includes("compte") && !(c.family ?? "").toLowerCase().includes("titres"))
+    .reduce((s, c) => s + Math.max(0, c.balance ?? 0), 0);
+  const cashRatio = totalAssets > 0 ? (cash / totalAssets) * 100 : 0;
+  if (cashRatio > 25) {
+    signals.push({
+      title: `Liquidités élevées (${cashRatio.toFixed(0)}%)`,
+      detail: `${fmtEur(cash, { compact: true })} dorment sur le compte courant. Opportunité d'arbitrage vers AV ou compte-titres.`,
+      tone: "opportunity",
+    });
+  } else if (cashRatio < 5 && totalAssets > 50000) {
+    signals.push({
+      title: "Liquidités très faibles",
+      detail: `Seulement ${cashRatio.toFixed(1)}% du patrimoine est disponible. Risque de tension de trésorerie.`,
+      tone: "risk",
+    });
+  }
+
+  // Concentration risk on top positions
+  const allPositions = client.contracts.flatMap((c) => c.positions.map((p) => ({ ...p, contractValue: c.balance ?? 0 })));
+  if (allPositions.length >= 3) {
+    const sorted = [...allPositions].sort((a, b) => (b.valuation ?? 0) - (a.valuation ?? 0));
+    const top3 = sorted.slice(0, 3).reduce((s, p) => s + (p.valuation ?? 0), 0);
+    const totalPos = allPositions.reduce((s, p) => s + (p.valuation ?? 0), 0);
+    if (totalPos > 0) {
+      const top3Pct = (top3 / totalPos) * 100;
+      if (top3Pct > 60) {
+        signals.push({
+          title: `Concentration top 3 positions (${top3Pct.toFixed(0)}%)`,
+          detail: `${sorted.slice(0, 3).map((p) => p.label).filter(Boolean).join(", ")} concentrent l'essentiel des UC. Diversification à envisager.`,
+          tone: "risk",
+        });
+      }
+    }
+  }
+
+  // Tax optimization: high TMI without PER
+  const hasPER = client.contracts.some((c) => (c.family ?? "").toLowerCase().includes("retraite"));
+  if (client.tmi != null && client.tmi >= 30 && !hasPER) {
+    signals.push({
+      title: "Optimisation fiscale · PER non équipé",
+      detail: `TMI à ${client.tmi}% sans PER. Versement déductible jusqu'à 10% des revenus → économie potentielle ~${fmtEur(((client.annualRevenue ?? 0) * 0.1 * client.tmi) / 100, { compact: true })}.`,
+      tone: "opportunity",
+    });
+  }
+
+  // Livret saturation
+  for (const c of client.contracts) {
+    if (c.ceiling && c.balance && c.balance / c.ceiling > 0.9) {
+      signals.push({
+        title: `${c.label} quasi saturé (${Math.round((c.balance / c.ceiling) * 100)}%)`,
+        detail: `Plafond ${fmtEur(c.ceiling, { compact: true })} presque atteint. Réorienter les nouveaux versements vers AV ou PEA.`,
+        tone: "watch",
+      });
+    }
+  }
+
+  // Maturity alerts (< 12 months)
+  const now = Date.now();
+  const oneYear = 365 * 24 * 3600 * 1000;
+  for (const c of client.contracts) {
+    if (!c.maturity) continue;
+    const m = new Date(c.maturity).getTime();
+    if (!isNaN(m) && m - now < oneYear && m - now > 0) {
+      const months = Math.round((m - now) / (30 * 24 * 3600 * 1000));
+      signals.push({
+        title: `${c.label} arrive à échéance`,
+        detail: `Échéance dans ${months} mois (${fmtDateFr(c.maturity)}). Anticiper la stratégie de réemploi.`,
+        tone: "watch",
+      });
+    }
+  }
+
+  // Equipment gap
+  if (client.equipmentScore != null && client.equipmentScore <= 4) {
+    signals.push({
+      title: `Score d'équipement faible (${client.equipmentScore}/10)`,
+      detail: "Le client est sous-équipé par rapport à son segment. Opportunité de proposer AV, PEA ou carte premium selon le profil.",
+      tone: "opportunity",
+    });
+  }
+
+  return signals;
 }
