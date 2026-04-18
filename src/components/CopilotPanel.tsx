@@ -108,11 +108,18 @@ export function CopilotPanel({ transcript, recording, clientId, clientName }: { 
     setChatInput("");
     setChatBusy(true);
     try {
-      const { data, error } = await supabase.functions.invoke("copilot", {
-        body: { mode: "chat", transcript, question: q, history: chat },
-      });
-      if (error) throw error;
-      setChat([...newHistory, { role: "assistant", content: data?.reply ?? "(pas de réponse)" }]);
+      // Render `/ask` only takes a single `prompt` — we prepend client + transcript context.
+      const ctxParts: string[] = [];
+      if (clientName || clientId) {
+        ctxParts.push(`Client: ${clientName ?? "(inconnu)"}${clientId ? ` (id: ${clientId})` : ""}`);
+      }
+      if (transcript) {
+        const tail = transcript.slice(-1500);
+        ctxParts.push(`Transcript récent:\n${tail}`);
+      }
+      ctxParts.push(`Question: ${q}`);
+      const reply = await askAgent(ctxParts.join("\n\n"));
+      setChat([...newHistory, { role: "assistant", content: reply || "(pas de réponse)" }]);
     } catch (e) {
       console.error(e);
       toast.error("Erreur du co-pilote", { description: e instanceof Error ? e.message : "Réessayez." });
