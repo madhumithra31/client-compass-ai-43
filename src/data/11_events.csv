@@ -1,0 +1,178 @@
+client_id,date,type,categorie,description,canal,criticite
+CLI00001,2022-02-14,Interaction conseiller,Réclamation,Réclamation via Appel téléphonique,Appel téléphonique,Important
+CLI00001,2022-06-08,Interaction conseiller,Envoi documentation,Envoi documentation via Email,Email,Info
+CLI00001,2022-11-01,Interaction conseiller,Envoi documentation,Envoi documentation via Appel téléphonique,Appel téléphonique,Info
+CLI00001,2023-02-14,Événement de vie,Changement d'employeur,Changement d'employeur détecté(e),Déclaratif / Détection,Info
+CLI00001,2023-06-22,Interaction conseiller,Question produit,Question produit via Email,Email,Info
+CLI00001,2023-07-21,Interaction conseiller,Réclamation,Réclamation via Email,Email,Important
+CLI00001,2023-10-12,Interaction conseiller,Entretien annuel,Entretien annuel via Email,Email,Info
+CLI00001,2023-10-22,Interaction conseiller,Suivi investissement,Suivi investissement via Rendez-vous agence,Rendez-vous agence,Info
+CLI00001,2024-02-23,Interaction conseiller,Réclamation,Réclamation via Email,Email,Important
+CLI00001,2024-08-03,Interaction conseiller,Opération exceptionnelle,Opération exceptionnelle via Email,Email,Info
+CLI00001,2024-10-05,Événement de vie,Déménagement,Déménagement détecté(e),Déclaratif / Détection,À suivre
+CLI00001,2025-02-05,Interaction conseiller,Réclamation,Réclamation via Messagerie app,Messagerie app,Important
+CLI00001,2025-06-25,Interaction conseiller,Envoi documentation,Envoi documentation via Appel téléphonique,Appel téléphonique,Info
+CLI00001,2025-11-02,Événement de vie,Augmentation salaire,Augmentation salaire détecté(e),Déclaratif / Détection,Info
+CLI00001,2025-12-15,Interaction conseiller,Suivi investissement,Suivi investissement via Rendez-vous agence,Rendez-vous agence,Info
+CLI00002,2017-04-15,Interaction conseiller,Suivi investissement,Suivi investissement via Email,Email,Info
+CLI00002,2017-10-03,Interaction conseiller,Question produit,Question produit via Appel téléphonique,Appel téléphonique,Info
+CLI00002,2017-11-14,Interaction conseiller,Point téléphonique,Point téléphonique via Appel téléphonique,Appel téléphonique,Info
+CLI00002,2018-04-08,Interaction conseiller,Envoi documentation,Envoi documentation via Messagerie app,Messagerie app,Info
+CLI00002,2018-07-21,Interaction conseiller,Envoi documentation,Envoi documentation via Email,Email,Info
+CLI00002,2019-02-03,Événement de vie,Achat immobilier,Achat immobilier détecté(e),Déclaratif / Détection,À suivre
+CLI00002,2019-04-02,Interaction conseiller,Point téléphonique,Point téléphonique via Messagerie app,Messagerie app,Info
+CLI00002,2019-04-08,Interaction conseiller,Point téléphonique,Point téléphonique via Email,Email,Info
+CLI00002,2019-07-08,Événement de vie,Naissance d'un enfant,Naissance d'un enfant détecté(e),Déclaratif / Détection,Important
+CLI00002,2021-06-12,Interaction conseiller,Point téléphonique,Point téléphonique via Messagerie app,Messagerie app,Info
+CLI00002,2021-06-17,Interaction conseiller,Demande de simulation,Demande de simulation via Rendez-vous agence,Rendez-vous agence,Info
+CLI00002,2021-09-08,Interaction conseiller,Entretien annuel,Entretien annuel via Appel téléphonique,Appel téléphonique,Info
+CLI00002,2022-04-12,Interaction conseiller,Point téléphonique,Point téléphonique via Messagerie app,Messagerie app,Info
+CLI00002,2022-05-16,Interaction conseiller,Envoi documentation,Envoi documentation via Email,Email,Info
+CLI00002,2022-06-10,Interaction conseiller,Point téléphonique,Point téléphonique via Email,Email,Info
+CLI00002,2022-07-17,Interaction conseiller,Point téléphonique,Point téléphonique via Rendez-vous agence,Rendez-vous agence,Info
+CLI00002,2023-03-07,Interaction conseiller,Réclamation,Réclamation via Rendez-vous agence,Rendez-vous agence,Important
+CLI00002,2023-04-08,Événement de vie,Promotion,Promotion détecté(e),Déclaratif / Détection,Info
+CLI00002,2023-04-26,Interaction conseiller,Question produit,Question produit via Messagerie app,Messagerie app,Info
+CLI00002,2023-05-23,Événement de vie,Changement d'employeur,Changement d'employeur détecté(e),Déclaratif / Détection,Important
+CLI00002,2024-07-29,Interaction conseiller,Question produit,Question produit via Messagerie app,Messagerie app,Info
+CLI00002,2024-10-16,Interaction conseiller,Entretien annuel,Entretien annuel via Messagerie app,Messagerie app,Info
+CLI00002,2025-08-11,Interaction conseiller,Question produit,Question produit via Appel téléphonique,Appel téléphonique,Info
+CLI00003,2017-08-10,Événement de vie,Héritage,Héritage détecté(e),Déclaratif / Détection,Important
+CLI00003,2017-10-10,Interaction conseiller,Point téléphonique,Point téléphonique via Messagerie app,Messagerie app,Info
+CLI00003,2018-01-01,Interaction conseiller,Entretien annuel,Entretien annuel via Rendez-vous agence,Rendez-vous agence,Info
+CLI00003,2018-10-26,Interaction conseiller,Suivi investissement,Suivi investissement via Email,Email,Info
+CLI00003,2019-04-24,Interaction conseiller,Envoi documentation,Envoi documentation via Email,Email,Info
+CLI00003,2019-11-16,Interaction conseiller,Opération exceptionnelle,Opération exceptionnelle via Messagerie app,Messagerie app,Info
+CLI00003,2019-11-27,Interaction conseiller,Demande de simulation,Demande de simulation via Appel téléphonique,Appel téléphonique,Info
+CLI00003,2019-12-29,Interaction conseiller,Point téléphonique,Point téléphonique via Email,Email,Info
+CLI00003,2020-05-04,Événement de vie,Mariage enfant,Mariage enfant détecté(e),Déclaratif / Détection,Info
+CLI00003,2020-08-13,Interaction conseiller,Demande de simulation,Demande de simulation via Appel téléphonique,Appel téléphonique,Info
+CLI00003,2021-10-29,Interaction conseiller,Point téléphonique,Point téléphonique via Rendez-vous agence,Rendez-vous agence,Info
+CLI00003,2021-12-13,Événement de vie,Naissance petit-enfant,Naissance petit-enfant détecté(e),Déclaratif / Détection,Important
+CLI00003,2022-03-03,Interaction conseiller,Réclamation,Réclamation via Appel téléphonique,Appel téléphonique,Important
+CLI00003,2022-04-03,Interaction conseiller,Entretien annuel,Entretien annuel via Email,Email,Info
+CLI00003,2023-09-22,Interaction conseiller,Opération exceptionnelle,Opération exceptionnelle via Email,Email,Info
+CLI00003,2024-04-08,Interaction conseiller,Envoi documentation,Envoi documentation via Email,Email,Info
+CLI00003,2024-08-26,Interaction conseiller,Point téléphonique,Point téléphonique via Email,Email,Info
+CLI00003,2025-05-18,Événement de vie,Vente résidence secondaire,Vente résidence secondaire détecté(e),Déclaratif / Détection,Info
+CLI00003,2025-09-15,Interaction conseiller,Entretien annuel,Entretien annuel via Messagerie app,Messagerie app,Info
+CLI00003,2025-11-02,Événement de vie,Promotion,Promotion détecté(e),Déclaratif / Détection,Info
+CLI00003,2026-01-22,Interaction conseiller,Point téléphonique,Point téléphonique via Email,Email,Info
+CLI00004,2017-10-29,Interaction conseiller,Entretien annuel,Entretien annuel via Appel téléphonique,Appel téléphonique,Info
+CLI00004,2018-01-24,Interaction conseiller,Réclamation,Réclamation via Rendez-vous agence,Rendez-vous agence,Important
+CLI00004,2019-08-16,Interaction conseiller,Question produit,Question produit via Messagerie app,Messagerie app,Info
+CLI00004,2020-08-24,Interaction conseiller,Entretien annuel,Entretien annuel via Messagerie app,Messagerie app,Info
+CLI00004,2020-12-13,Interaction conseiller,Envoi documentation,Envoi documentation via Email,Email,Info
+CLI00004,2021-05-29,Interaction conseiller,Réclamation,Réclamation via Rendez-vous agence,Rendez-vous agence,Important
+CLI00004,2021-08-08,Interaction conseiller,Réclamation,Réclamation via Appel téléphonique,Appel téléphonique,Important
+CLI00004,2021-12-02,Événement de vie,Donation à enfant,Donation à enfant détecté(e),Déclaratif / Détection,Important
+CLI00004,2022-06-10,Événement de vie,Décès conjoint,Décès conjoint détecté(e),Déclaratif / Détection,Info
+CLI00004,2022-08-16,Interaction conseiller,Opération exceptionnelle,Opération exceptionnelle via Appel téléphonique,Appel téléphonique,Info
+CLI00004,2023-07-22,Événement de vie,Rachat partiel AV,Rachat partiel AV détecté(e),Déclaratif / Détection,À suivre
+CLI00004,2025-08-16,Interaction conseiller,Envoi documentation,Envoi documentation via Messagerie app,Messagerie app,Info
+CLI00005,2017-06-06,Interaction conseiller,Point téléphonique,Point téléphonique via Appel téléphonique,Appel téléphonique,Info
+CLI00005,2018-01-04,Interaction conseiller,Entretien annuel,Entretien annuel via Email,Email,Info
+CLI00005,2019-02-23,Interaction conseiller,Envoi documentation,Envoi documentation via Rendez-vous agence,Rendez-vous agence,Info
+CLI00005,2019-04-24,Interaction conseiller,Entretien annuel,Entretien annuel via Messagerie app,Messagerie app,Info
+CLI00005,2019-09-13,Interaction conseiller,Opération exceptionnelle,Opération exceptionnelle via Email,Email,Info
+CLI00005,2019-10-30,Interaction conseiller,Réclamation,Réclamation via Appel téléphonique,Appel téléphonique,Important
+CLI00005,2020-02-19,Interaction conseiller,Envoi documentation,Envoi documentation via Email,Email,Info
+CLI00005,2020-07-23,Interaction conseiller,Opération exceptionnelle,Opération exceptionnelle via Rendez-vous agence,Rendez-vous agence,Info
+CLI00005,2020-09-15,Interaction conseiller,Envoi documentation,Envoi documentation via Appel téléphonique,Appel téléphonique,Info
+CLI00005,2021-05-28,Interaction conseiller,Entretien annuel,Entretien annuel via Appel téléphonique,Appel téléphonique,Info
+CLI00005,2021-09-11,Événement de vie,Héritage,Héritage détecté(e),Déclaratif / Détection,Info
+CLI00005,2021-11-15,Interaction conseiller,Réclamation,Réclamation via Rendez-vous agence,Rendez-vous agence,Important
+CLI00005,2022-06-01,Interaction conseiller,Opération exceptionnelle,Opération exceptionnelle via Rendez-vous agence,Rendez-vous agence,Info
+CLI00005,2022-06-22,Interaction conseiller,Envoi documentation,Envoi documentation via Rendez-vous agence,Rendez-vous agence,Info
+CLI00005,2022-06-23,Interaction conseiller,Opération exceptionnelle,Opération exceptionnelle via Email,Email,Info
+CLI00005,2022-11-06,Interaction conseiller,Opération exceptionnelle,Opération exceptionnelle via Email,Email,Info
+CLI00005,2023-02-15,Interaction conseiller,Question produit,Question produit via Rendez-vous agence,Rendez-vous agence,Info
+CLI00005,2023-06-10,Événement de vie,Investissement locatif,Investissement locatif détecté(e),Déclaratif / Détection,À suivre
+CLI00005,2023-07-23,Interaction conseiller,Demande de simulation,Demande de simulation via Messagerie app,Messagerie app,Info
+CLI00005,2024-09-28,Interaction conseiller,Entretien annuel,Entretien annuel via Rendez-vous agence,Rendez-vous agence,Info
+CLI00005,2025-05-12,Interaction conseiller,Envoi documentation,Envoi documentation via Email,Email,Info
+CLI00005,2025-10-15,Interaction conseiller,Réclamation,Réclamation via Messagerie app,Messagerie app,Important
+CLI00006,2017-04-28,Événement de vie,Déménagement,Déménagement détecté(e),Déclaratif / Détection,Important
+CLI00006,2017-05-19,Interaction conseiller,Suivi investissement,Suivi investissement via Rendez-vous agence,Rendez-vous agence,Info
+CLI00006,2018-04-18,Interaction conseiller,Point téléphonique,Point téléphonique via Appel téléphonique,Appel téléphonique,Info
+CLI00006,2019-04-05,Interaction conseiller,Question produit,Question produit via Rendez-vous agence,Rendez-vous agence,Info
+CLI00006,2019-08-14,Interaction conseiller,Envoi documentation,Envoi documentation via Messagerie app,Messagerie app,Info
+CLI00006,2020-03-30,Interaction conseiller,Question produit,Question produit via Email,Email,Info
+CLI00006,2020-08-11,Interaction conseiller,Question produit,Question produit via Email,Email,Info
+CLI00006,2021-06-07,Interaction conseiller,Envoi documentation,Envoi documentation via Messagerie app,Messagerie app,Info
+CLI00006,2022-02-11,Interaction conseiller,Opération exceptionnelle,Opération exceptionnelle via Email,Email,Info
+CLI00006,2022-09-20,Événement de vie,Souscription crédit conso,Souscription crédit conso détecté(e),Déclaratif / Détection,Info
+CLI00006,2022-11-18,Interaction conseiller,Point téléphonique,Point téléphonique via Messagerie app,Messagerie app,Info
+CLI00006,2023-02-16,Interaction conseiller,Réclamation,Réclamation via Rendez-vous agence,Rendez-vous agence,Important
+CLI00006,2023-03-04,Interaction conseiller,Réclamation,Réclamation via Messagerie app,Messagerie app,Important
+CLI00006,2023-04-04,Interaction conseiller,Entretien annuel,Entretien annuel via Messagerie app,Messagerie app,Info
+CLI00006,2023-06-07,Alerte,Découvert non autorisé,Dépassement du plafond de découvert autorisé,Système,Important
+CLI00006,2023-06-12,Interaction conseiller,Entretien annuel,Entretien annuel via Appel téléphonique,Appel téléphonique,Info
+CLI00006,2023-07-05,Alerte,Découvert non autorisé,Dépassement du plafond de découvert autorisé,Système,Important
+CLI00006,2023-08-02,Interaction conseiller,Réclamation,Réclamation via Appel téléphonique,Appel téléphonique,Important
+CLI00006,2023-08-05,Interaction conseiller,Question produit,Question produit via Messagerie app,Messagerie app,Info
+CLI00006,2023-08-31,Alerte,Découvert non autorisé,Dépassement du plafond de découvert autorisé,Système,Important
+CLI00006,2024-03-13,Interaction conseiller,Opération exceptionnelle,Opération exceptionnelle via Email,Email,Info
+CLI00006,2024-04-02,Alerte,Découvert non autorisé,Dépassement du plafond de découvert autorisé,Système,Important
+CLI00006,2024-07-30,Interaction conseiller,Entretien annuel,Entretien annuel via Messagerie app,Messagerie app,Info
+CLI00006,2024-10-26,Alerte,Découvert non autorisé,Dépassement du plafond de découvert autorisé,Système,Important
+CLI00006,2025-02-16,Interaction conseiller,Envoi documentation,Envoi documentation via Rendez-vous agence,Rendez-vous agence,Info
+CLI00007,2025-01-28,Interaction conseiller,Réclamation,Réclamation via Rendez-vous agence,Rendez-vous agence,Important
+CLI00007,2025-02-09,Interaction conseiller,Réclamation,Réclamation via Appel téléphonique,Appel téléphonique,Important
+CLI00007,2025-02-12,Interaction conseiller,Point téléphonique,Point téléphonique via Appel téléphonique,Appel téléphonique,Info
+CLI00007,2025-02-13,Interaction conseiller,Suivi investissement,Suivi investissement via Email,Email,Info
+CLI00007,2025-04-27,Interaction conseiller,Point téléphonique,Point téléphonique via Appel téléphonique,Appel téléphonique,Info
+CLI00007,2025-07-16,Interaction conseiller,Demande de simulation,Demande de simulation via Email,Email,Info
+CLI00007,2025-08-10,Interaction conseiller,Point téléphonique,Point téléphonique via Rendez-vous agence,Rendez-vous agence,Info
+CLI00007,2025-09-14,Interaction conseiller,Opération exceptionnelle,Opération exceptionnelle via Email,Email,Info
+CLI00007,2025-10-18,Interaction conseiller,Point téléphonique,Point téléphonique via Messagerie app,Messagerie app,Info
+CLI00007,2025-10-28,Événement de vie,Premier emploi,Premier emploi détecté(e),Déclaratif / Détection,Info
+CLI00007,2025-12-13,Interaction conseiller,Opération exceptionnelle,Opération exceptionnelle via Messagerie app,Messagerie app,Info
+CLI00007,2025-12-31,Interaction conseiller,Demande de simulation,Demande de simulation via Email,Email,Info
+CLI00007,2026-01-14,Interaction conseiller,Opération exceptionnelle,Opération exceptionnelle via Appel téléphonique,Appel téléphonique,Info
+CLI00007,2026-01-21,Événement de vie,Déménagement,Déménagement détecté(e),Déclaratif / Détection,Important
+CLI00007,2026-02-01,Interaction conseiller,Suivi investissement,Suivi investissement via Appel téléphonique,Appel téléphonique,Info
+CLI00007,2026-02-06,Interaction conseiller,Envoi documentation,Envoi documentation via Messagerie app,Messagerie app,Info
+CLI00007,2026-02-09,Interaction conseiller,Question produit,Question produit via Messagerie app,Messagerie app,Info
+CLI00007,2026-02-13,Interaction conseiller,Question produit,Question produit via Appel téléphonique,Appel téléphonique,Info
+CLI00007,2026-03-06,Interaction conseiller,Point téléphonique,Point téléphonique via Rendez-vous agence,Rendez-vous agence,Info
+CLI00008,2018-07-29,Interaction conseiller,Opération exceptionnelle,Opération exceptionnelle via Rendez-vous agence,Rendez-vous agence,Info
+CLI00008,2018-11-25,Interaction conseiller,Point téléphonique,Point téléphonique via Rendez-vous agence,Rendez-vous agence,Info
+CLI00008,2019-04-26,Interaction conseiller,Suivi investissement,Suivi investissement via Rendez-vous agence,Rendez-vous agence,Info
+CLI00008,2020-11-14,Événement de vie,Achat immobilier,Achat immobilier détecté(e),Déclaratif / Détection,À suivre
+CLI00008,2021-06-14,Événement de vie,PACS,PACS détecté(e),Déclaratif / Détection,À suivre
+CLI00008,2021-09-25,Interaction conseiller,Point téléphonique,Point téléphonique via Rendez-vous agence,Rendez-vous agence,Info
+CLI00008,2021-10-06,Interaction conseiller,Réclamation,Réclamation via Email,Email,Important
+CLI00008,2022-06-13,Interaction conseiller,Point téléphonique,Point téléphonique via Email,Email,Info
+CLI00008,2023-08-19,Interaction conseiller,Opération exceptionnelle,Opération exceptionnelle via Rendez-vous agence,Rendez-vous agence,Info
+CLI00008,2023-10-30,Interaction conseiller,Point téléphonique,Point téléphonique via Email,Email,Info
+CLI00009,2017-04-28,Interaction conseiller,Opération exceptionnelle,Opération exceptionnelle via Messagerie app,Messagerie app,Info
+CLI00009,2019-02-14,Événement de vie,Achat immobilier,Achat immobilier détecté(e),Déclaratif / Détection,À suivre
+CLI00009,2020-05-05,Événement de vie,Remariage,Remariage détecté(e),Déclaratif / Détection,À suivre
+CLI00009,2020-08-10,Événement de vie,Rentrée études supérieures enfant,Rentrée études supérieures enfant détecté(e),Déclaratif / Détection,À suivre
+CLI00009,2020-08-13,Interaction conseiller,Réclamation,Réclamation via Appel téléphonique,Appel téléphonique,Important
+CLI00009,2021-04-19,Interaction conseiller,Réclamation,Réclamation via Appel téléphonique,Appel téléphonique,Important
+CLI00009,2022-03-09,Interaction conseiller,Demande de simulation,Demande de simulation via Appel téléphonique,Appel téléphonique,Info
+CLI00009,2022-05-20,Interaction conseiller,Suivi investissement,Suivi investissement via Rendez-vous agence,Rendez-vous agence,Info
+CLI00009,2024-03-15,Interaction conseiller,Opération exceptionnelle,Opération exceptionnelle via Appel téléphonique,Appel téléphonique,Info
+CLI00009,2025-05-01,Interaction conseiller,Réclamation,Réclamation via Email,Email,Important
+CLI00010,2025-08-19,Interaction conseiller,Envoi documentation,Envoi documentation via Appel téléphonique,Appel téléphonique,Info
+CLI00010,2025-08-28,Interaction conseiller,Opération exceptionnelle,Opération exceptionnelle via Email,Email,Info
+CLI00010,2025-09-12,Interaction conseiller,Entretien annuel,Entretien annuel via Email,Email,Info
+CLI00010,2025-10-01,Interaction conseiller,Demande de simulation,Demande de simulation via Appel téléphonique,Appel téléphonique,Info
+CLI00010,2025-10-21,Événement de vie,Changement d'employeur,Changement d'employeur détecté(e),Déclaratif / Détection,À suivre
+CLI00010,2025-11-02,Interaction conseiller,Réclamation,Réclamation via Rendez-vous agence,Rendez-vous agence,Important
+CLI00010,2025-11-05,Interaction conseiller,Point téléphonique,Point téléphonique via Appel téléphonique,Appel téléphonique,Info
+CLI00010,2025-11-21,Interaction conseiller,Question produit,Question produit via Email,Email,Info
+CLI00010,2025-12-18,Interaction conseiller,Opération exceptionnelle,Opération exceptionnelle via Rendez-vous agence,Rendez-vous agence,Info
+CLI00010,2025-12-23,Interaction conseiller,Point téléphonique,Point téléphonique via Messagerie app,Messagerie app,Info
+CLI00010,2025-12-28,Interaction conseiller,Point téléphonique,Point téléphonique via Appel téléphonique,Appel téléphonique,Info
+CLI00010,2025-12-30,Interaction conseiller,Demande de simulation,Demande de simulation via Messagerie app,Messagerie app,Info
+CLI00010,2026-01-10,Événement de vie,Vente bien à l'étranger,Vente bien à l'étranger détecté(e),Déclaratif / Détection,À suivre
+CLI00010,2026-01-20,Interaction conseiller,Suivi investissement,Suivi investissement via Appel téléphonique,Appel téléphonique,Info
+CLI00010,2026-01-22,Interaction conseiller,Entretien annuel,Entretien annuel via Email,Email,Info
+CLI00010,2026-01-27,Interaction conseiller,Question produit,Question produit via Messagerie app,Messagerie app,Info
+CLI00010,2026-01-31,Interaction conseiller,Point téléphonique,Point téléphonique via Appel téléphonique,Appel téléphonique,Info
+CLI00010,2026-02-05,Événement de vie,Retour en France,Retour en France détecté(e),Déclaratif / Détection,Important
+CLI00010,2026-02-26,Interaction conseiller,Point téléphonique,Point téléphonique via Messagerie app,Messagerie app,Info
+CLI00010,2026-04-01,Interaction conseiller,Réclamation,Réclamation via Email,Email,Important

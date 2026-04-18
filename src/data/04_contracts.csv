@@ -1,0 +1,62 @@
+client_id,contrat_id,code_produit,libelle_produit,famille_produit,date_ouverture,statut,encours_eur,devise
+CLI00001,CTR00001,CC,Compte courant,Compte,2023-11-10,Actif,10875.08,EUR
+CLI00001,CTR00002,LivretA,Livret A,Épargne réglementée,2023-07-20,Actif,4955.1,EUR
+CLI00001,CTR00003,LDDS,LDDS,Épargne réglementée,2023-11-06,Actif,3491.39,EUR
+CLI00001,CTR00004,AV_debut,Assurance-vie débutant,Assurance-vie,2024-04-21,Actif,3308.78,EUR
+CLI00002,CTR00005,CC,Compte courant,Compte,2017-03-28,Actif,14051.5,EUR
+CLI00002,CTR00006,LivretA,Livret A,Épargne réglementée,2022-06-12,Actif,11361.68,EUR
+CLI00002,CTR00007,LDDS,LDDS,Épargne réglementée,2019-05-23,Actif,2471.58,EUR
+CLI00002,CTR00008,PEL,Plan Épargne Logement,Épargne réglementée,2020-04-30,Actif,49043.21,EUR
+CLI00002,CTR00009,AV,Assurance-vie multisupports,Assurance-vie,2020-07-23,Actif,92697.23,EUR
+CLI00002,CTR00010,CreditImmo,Crédit immobilier,Crédit,2019-05-20,Actif,-111165.74,EUR
+CLI00002,CTR00011,CarteGold,Carte Visa Gold,Moyen de paiement,2024-06-18,Actif,0.0,EUR
+CLI00003,CTR00012,CC,Compte courant,Compte,2017-11-16,Actif,55660.12,EUR
+CLI00003,CTR00013,LivretA,Livret A,Épargne réglementée,2011-08-18,Actif,22950.0,EUR
+CLI00003,CTR00014,LDDS,LDDS,Épargne réglementée,2014-05-04,Actif,6051.93,EUR
+CLI00003,CTR00015,AV,Assurance-vie multisupports,Assurance-vie,2013-10-05,Actif,229174.03,EUR
+CLI00003,CTR00016,AV2,Assurance-vie multisupports n°2,Assurance-vie,2004-02-11,Actif,213610.9,EUR
+CLI00003,CTR00017,PEA,Plan Épargne en Actions,Compte-titres,2013-09-09,Actif,105036.01,EUR
+CLI00003,CTR00018,CIF,Compte-titres Ordinaire,Compte-titres,2013-08-17,Actif,121386.17,EUR
+CLI00003,CTR00019,CarteInfinite,Carte Visa Infinite,Moyen de paiement,2003-07-23,Actif,0.0,EUR
+CLI00004,CTR00020,CC,Compte courant,Compte,2007-05-01,Actif,19322.5,EUR
+CLI00004,CTR00021,LivretA,Livret A,Épargne réglementée,2016-07-16,Actif,7370.45,EUR
+CLI00004,CTR00022,AV,Assurance-vie multisupports,Assurance-vie,2001-10-12,Actif,242715.6,EUR
+CLI00004,CTR00023,AV2,Assurance-vie multisupports n°2,Assurance-vie,2015-12-12,Actif,227891.04,EUR
+CLI00004,CTR00024,PEA,Plan Épargne en Actions,Compte-titres,2016-12-26,Actif,59034.69,EUR
+CLI00005,CTR00025,CC,Compte courant,Compte,2018-05-10,Actif,28928.54,EUR
+CLI00005,CTR00026,LivretA,Livret A,Épargne réglementée,2020-10-26,Actif,22950.0,EUR
+CLI00005,CTR00027,LDDS,LDDS,Épargne réglementée,2022-10-20,Actif,7485.17,EUR
+CLI00005,CTR00028,AV,Assurance-vie multisupports,Assurance-vie,2021-03-19,Actif,127192.92,EUR
+CLI00005,CTR00029,PEA,Plan Épargne en Actions,Compte-titres,2019-06-25,Actif,45326.49,EUR
+CLI00005,CTR00030,PER,Plan Épargne Retraite Individuel,Retraite,2023-01-23,Actif,49448.3,EUR
+CLI00005,CTR00031,CIF,Compte-titres Ordinaire,Compte-titres,2024-12-26,Actif,196564.43,EUR
+CLI00005,CTR00032,CreditImmo,Crédit immobilier,Crédit,2021-06-07,Actif,-249222.08,EUR
+CLI00005,CTR00033,CarteInfinite,Carte Visa Infinite,Moyen de paiement,2019-08-02,Actif,0.0,EUR
+CLI00006,CTR00034,CC,Compte courant,Compte,2024-12-05,Actif,687.72,EUR
+CLI00006,CTR00035,LivretA,Livret A,Épargne réglementée,2020-12-21,Actif,2941.3,EUR
+CLI00006,CTR00036,CreditConso,Crédit à la consommation,Crédit,2016-08-09,Actif,-6931.45,EUR
+CLI00006,CTR00037,CarteClassic,Carte Visa Classic,Moyen de paiement,2019-06-27,Actif,0.0,EUR
+CLI00007,CTR00038,CC,Compte courant,Compte,2025-06-19,Actif,4458.5,EUR
+CLI00007,CTR00039,LivretA,Livret A,Épargne réglementée,2025-08-27,Actif,6324.39,EUR
+CLI00007,CTR00040,LDDS,LDDS,Épargne réglementée,2025-04-16,Actif,9195.76,EUR
+CLI00008,CTR00041,CC,Compte courant,Compte,2021-10-13,Actif,9544.5,EUR
+CLI00008,CTR00042,LivretA,Livret A,Épargne réglementée,2023-12-19,Actif,18368.26,EUR
+CLI00008,CTR00043,LDDS,LDDS,Épargne réglementée,2017-08-20,Actif,9424.63,EUR
+CLI00008,CTR00044,PEL,Plan Épargne Logement,Épargne réglementée,2023-11-15,Actif,24019.05,EUR
+CLI00008,CTR00045,AV_debut,Assurance-vie débutant,Assurance-vie,2021-05-11,Actif,4986.13,EUR
+CLI00008,CTR00046,CreditImmo,Crédit immobilier,Crédit,2017-09-27,Actif,-184991.44,EUR
+CLI00008,CTR00047,CarteGold,Carte Visa Gold,Moyen de paiement,2018-11-05,Actif,0.0,EUR
+CLI00009,CTR00048,CC,Compte courant,Compte,2024-11-23,Actif,30707.47,EUR
+CLI00009,CTR00049,LivretA,Livret A,Épargne réglementée,2013-07-09,Actif,22950.0,EUR
+CLI00009,CTR00050,LDDS,LDDS,Épargne réglementée,2025-07-29,Actif,7564.8,EUR
+CLI00009,CTR00051,PEL,Plan Épargne Logement,Épargne réglementée,2014-10-19,Actif,37137.48,EUR
+CLI00009,CTR00052,AV,Assurance-vie multisupports,Assurance-vie,2023-04-10,Actif,69980.39,EUR
+CLI00009,CTR00053,PEA,Plan Épargne en Actions,Compte-titres,2013-10-26,Actif,116821.48,EUR
+CLI00009,CTR00054,CreditImmo,Crédit immobilier,Crédit,2021-03-10,Actif,-125303.07,EUR
+CLI00009,CTR00055,CarteInfinite,Carte Visa Infinite,Moyen de paiement,2019-11-23,Actif,0.0,EUR
+CLI00010,CTR00056,CC,Compte courant,Compte,2025-08-07,Actif,64776.83,EUR
+CLI00010,CTR00057,LivretA,Livret A,Épargne réglementée,2025-09-07,Actif,11407.79,EUR
+CLI00010,CTR00058,LDDS,LDDS,Épargne réglementée,2025-08-20,Actif,6727.65,EUR
+CLI00010,CTR00059,AV,Assurance-vie multisupports,Assurance-vie,2025-09-28,Actif,240798.02,EUR
+CLI00010,CTR00060,PEA,Plan Épargne en Actions,Compte-titres,2025-08-28,Actif,104305.38,EUR
+CLI00010,CTR00061,CIF,Compte-titres Ordinaire,Compte-titres,2025-08-30,Actif,288777.28,EUR

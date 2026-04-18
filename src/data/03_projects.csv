@@ -1,0 +1,28 @@
+client_id,projet,horizon_annees,montant_cible_eur,priorite,date_declaration
+CLI00001,Constitution épargne de précaution,2,200000,Haute,2024-10-22
+CLI00001,Préparation achat immobilier,11,100000,Haute,2023-12-27
+CLI00002,Études des enfants,12,200000,Basse,2025-11-24
+CLI00002,Investissement locatif,4,100000,Moyenne,2024-04-24
+CLI00002,Renouvellement véhicule,2,10000,Basse,2025-08-30
+CLI00003,Préparation retraite,6,100000,Moyenne,2025-11-12
+CLI00003,Transmission patrimoine,14,500000,Haute,2023-10-19
+CLI00003,Résidence secondaire,1,100000,Basse,2025-02-23
+CLI00004,Transmission aux enfants,13,10000,Haute,2024-04-27
+CLI00004,Donation-partage,4,200000,Moyenne,2024-01-13
+CLI00004,Optimisation succession,7,25000,Moyenne,2025-11-03
+CLI00005,Préparation retraite,4,10000,Moyenne,2023-10-18
+CLI00005,Investissement locatif,1,500000,Basse,2023-05-01
+CLI00005,Études des enfants,2,25000,Haute,2025-07-11
+CLI00006,Constitution épargne de précaution,8,100000,Haute,2025-06-30
+CLI00006,Stabilisation budgétaire,15,10000,Haute,2025-05-16
+CLI00007,Constitution épargne de précaution,1,100000,Moyenne,2025-10-18
+CLI00007,Premier véhicule,5,100000,Basse,2025-12-22
+CLI00008,Finalisation achat immobilier,3,25000,Moyenne,2024-06-19
+CLI00008,Équipement logement,1,200000,Basse,2023-08-03
+CLI00008,Arrivée d'enfant,12,50000,Haute,2023-07-12
+CLI00009,Études des enfants,10,100000,Basse,2026-03-23
+CLI00009,Travaux résidence,3,10000,Basse,2023-09-12
+CLI00009,Préparation retraite,14,25000,Haute,2023-08-18
+CLI00010,Réinstallation France,11,25000,Moyenne,2023-12-02
+CLI00010,Achat immobilier à terme,15,200000,Haute,2023-06-21
+CLI00010,Scolarisation enfants,10,10000,Moyenne,2026-03-06

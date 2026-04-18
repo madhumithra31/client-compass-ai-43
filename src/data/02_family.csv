@@ -1,0 +1,11 @@
+client_id,situation_familiale,regime_matrimonial,conjoint_prenom,conjoint_nom,conjoint_age,nb_enfants,ages_enfants,personnes_a_charge,type_logement,annee_acquisition_residence,valeur_estimee_residence_eur
+CLI00001,Célibataire,,,,,0,,0,Locataire,,
+CLI00002,Marié(e),Communauté universelle,Caroline,Petit,42.0,2,"12, 20",2,Propriétaire avec crédit,2020.0,245561.0
+CLI00003,Marié(e),Participation aux acquêts,Isabelle,Roux,54.0,2,"9, 15",2,Propriétaire,2014.0,582554.0
+CLI00004,Veuf(ve),,,,,3,"13, 9, 21",3,Propriétaire,2013.0,784004.0
+CLI00005,Marié(e),Participation aux acquêts,Caroline,Girard,54.0,2,"5, 9",2,Propriétaire avec crédit,2022.0,458607.0
+CLI00006,Divorcé(e),,,,,2,"6, 14",2,Locataire,,
+CLI00007,Célibataire,,,,,0,,0,Locataire,,
+CLI00008,Pacsé(e),,Thomas,Roux,33.0,1,1,1,Propriétaire avec crédit,2015.0,539902.0
+CLI00009,Remarié(e),Participation aux acquêts,Stéphane,Richard,45.0,3,"7, 18, 24",3,Propriétaire avec crédit,2013.0,410922.0
+CLI00010,Marié(e),Communauté réduite aux acquêts,Sophie,Lefèvre,41.0,2,"2, 11",2,Locataire,,
