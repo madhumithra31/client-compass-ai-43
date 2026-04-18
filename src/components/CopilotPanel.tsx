@@ -50,11 +50,32 @@ export function CopilotPanel({ transcript, recording, clientId, clientName }: { 
   async function fetchSuggestions() {
     setLoadingSuggest(true);
     try {
-      const { data, error } = await supabase.functions.invoke("copilot", {
-        body: { mode: "suggest", transcript },
+      const raw = await quickAgent({
+        keyword_id: "live_suggestions",
+        client_id: clientId,
+        client_name: clientName,
       });
-      if (error) throw error;
-      const incoming = (data?.suggestions ?? []) as Array<Omit<Suggestion, "id" | "status" | "ts">>;
+      // Try to parse Render `response` as a JSON array of structured suggestions.
+      // Fallback to a single "talking_point" card if it's plain text.
+      let incoming: Array<Omit<Suggestion, "id" | "status" | "ts">> = [];
+      try {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          incoming = parsed.filter(
+            (s) => s && typeof s.title === "string" && typeof s.body === "string",
+          );
+        }
+      } catch {
+        // not JSON — treat as single suggestion
+      }
+      if (incoming.length === 0 && raw.trim()) {
+        incoming = [{
+          type: "talking_point",
+          priority: "medium",
+          title: "Suggestion live",
+          body: raw.trim(),
+        }];
+      }
       setSuggestions((prev) => {
         const activeIds = new Set(prev.filter((s) => s.status !== "active").map((s) => `${s.type}:${s.title}`));
         const fresh: Suggestion[] = incoming
