@@ -353,3 +353,19 @@ function EmptyState({ loading, recording, hasTranscript }: { loading: boolean; r
     </div>
   );
 }
+
+function ChatThinking() {
+  const [slow, setSlow] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setSlow(true), 5000);
+    return () => clearTimeout(t);
+  }, []);
+  return (
+    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+      <Loader2 className="h-3 w-3 animate-spin" />
+      {slow
+        ? "Réveil du service en cours (cold start, ~30-60s)…"
+        : "Le co-pilote réfléchit…"}
+    </div>
+  );
+}
