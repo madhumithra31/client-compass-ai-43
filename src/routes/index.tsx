@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { Logo } from "@/components/Logo";
+
 import { ArrowRight, Mic, BarChart3, Bell, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -18,16 +18,7 @@ export const Route = createFileRoute("/")({
 function Index() {
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border/60 bg-surface/70 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <Logo />
-          <div className="hidden items-center gap-2 text-xs text-muted-foreground md:flex">
-            <span className="h-2 w-2 rounded-full bg-success pulse-ring" />
-            All systems operational
-          </div>
-        </div>
-      </header>
+      {/* Header removed — global AppNav is rendered in __root.tsx */}
 
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-hero text-primary-foreground">

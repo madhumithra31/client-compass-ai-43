@@ -1,10 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { useMemo } from "react";
-import { Logo } from "@/components/Logo";
 import { clientList, type Client } from "@/lib/mock-data";
 import {
-  ArrowLeft, Wallet, TrendingUp, Users, Award, AlertTriangle,
+  Wallet, TrendingUp, Users, Award, AlertTriangle,
   Target, Briefcase, MapPin, Activity, Sparkles, ArrowRight,
   PiggyBank, ShieldAlert, Calendar,
 } from "lucide-react";
@@ -57,24 +56,7 @@ function Portfolio() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-20 border-b border-border bg-surface/85 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-3">
-          <div className="flex items-center gap-4">
-            <Link to="/" className="text-muted-foreground hover:text-foreground">
-              <ArrowLeft className="h-4 w-4" />
-            </Link>
-            <Logo />
-            <span className="hidden text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground md:inline">
-              · Portfolio Overview
-            </span>
-          </div>
-          <nav className="flex items-center gap-4 text-xs">
-            <Link to="/dashboard" className="text-muted-foreground hover:text-foreground">Cockpit Manager</Link>
-            <Link to="/meeting" className="text-muted-foreground hover:text-foreground">Rendez-vous</Link>
-          </nav>
-        </div>
-      </header>
+      {/* Header removed — global AppNav is rendered in __root.tsx */}
 
       <main className="mx-auto max-w-7xl px-6 py-10">
         {/* Title */}

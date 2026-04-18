@@ -3,7 +3,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 // HMR refresh trigger
 import { motion, AnimatePresence } from "framer-motion";
 import { Toaster } from "sonner";
-import { Logo } from "@/components/Logo";
 import { CopilotPanel } from "@/components/CopilotPanel";
 import { ClientMindmapModal } from "@/components/ClientMindmapModal";
 import { clients, clientList, defaultClientId, scriptedTranscript, type TranscriptLine, type Client, type Contract, type Position, type Project, type ClientEvent } from "@/lib/mock-data";
@@ -11,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Mic, MicOff, Pause, Play, Sparkles, AlertTriangle, CheckCircle2, Mail,
-  Phone, Briefcase, Calendar, Tag, ArrowLeft, Loader2, Users, Network,
+  Phone, Briefcase, Calendar, Tag, Loader2, Users, Network,
   Wallet, TrendingUp, Award, Clock, ChevronDown, ChevronRight, Target, Home, Heart, Activity as ActivityIcon, Lightbulb,
 } from "lucide-react";
 
@@ -161,15 +160,10 @@ function Meeting() {
       {/* Header */}
       <header className="sticky top-0 z-20 border-b border-border bg-surface/85 backdrop-blur">
         <div className="mx-auto flex max-w-[1400px] items-center justify-between gap-4 px-6 py-3">
-          <div className="flex items-center gap-4">
-            <Link to="/" className="text-muted-foreground hover:text-foreground">
-              <ArrowLeft className="h-4 w-4" />
-            </Link>
-            <Logo />
+          <div className="flex items-center gap-3">
             <span className="hidden text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground lg:inline">
-              · Rendez-vous live
+              Rendez-vous live
             </span>
-            <Link to="/portfolio" className="hidden text-xs text-muted-foreground hover:text-foreground lg:inline">Portfolio</Link>
           </div>
           <div className="flex items-center gap-3">
             <Select
