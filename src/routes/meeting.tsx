@@ -192,7 +192,7 @@ function Meeting() {
       <main className="mx-auto grid max-w-[1500px] gap-5 px-6 py-6 lg:grid-cols-[280px_minmax(0,1fr)_380px]">
         {/* LEFT — Client + Sentiment + Alerts + Insights */}
         <aside className="space-y-4">
-          <ClientCard />
+          <ClientCard onOpenMindmap={() => setMindmapOpen(true)} />
           <SentimentCard avg={avgSentiment} series={sentimentSeries} />
           <AlertsCard alerts={alerts} />
           <InsightsCard insights={insights} loading={analyzing && insights.length === 0} hasTranscript={lines.length > 0} />
