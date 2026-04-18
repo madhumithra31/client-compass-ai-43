@@ -1,8 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
-import { ReactFlow, Background, Controls, type Node, type Edge, MarkerType } from "@xyflow/react";
-import "@xyflow/react/dist/style.css";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Sparkles, Loader2, RefreshCw } from "lucide-react";
+import { X, Sparkles, Loader2, RefreshCw, Briefcase, Tag, Calendar, Mail, Phone, Network } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { type Client } from "@/lib/mock-data";
 
@@ -14,103 +12,86 @@ type Branch = {
 type MindmapData = { summary: string; branches: Branch[] };
 
 const TONE_STYLES: Record<Branch["tone"], { bg: string; border: string; dot: string; label: string }> = {
-  positive:    { bg: "bg-success/10",     border: "border-success/40",     dot: "bg-success",     label: "text-success" },
-  opportunity: { bg: "bg-primary/10",     border: "border-primary/40",     dot: "bg-primary",     label: "text-primary" },
+  positive:    { bg: "bg-success/10",     border: "border-success/40",     dot: "bg-success",          label: "text-success" },
+  opportunity: { bg: "bg-primary/10",     border: "border-primary/40",     dot: "bg-primary",          label: "text-primary" },
   neutral:     { bg: "bg-muted",          border: "border-border",         dot: "bg-muted-foreground", label: "text-foreground" },
-  warning:     { bg: "bg-warning/10",     border: "border-warning/50",     dot: "bg-warning",     label: "text-warning-foreground" },
-  risk:        { bg: "bg-destructive/10", border: "border-destructive/40", dot: "bg-destructive", label: "text-destructive" },
+  warning:     { bg: "bg-warning/10",     border: "border-warning/50",     dot: "bg-warning",          label: "text-warning-foreground" },
+  risk:        { bg: "bg-destructive/10", border: "border-destructive/40", dot: "bg-destructive",      label: "text-destructive" },
 };
 
-function ClientNode({ data }: { data: { name: string; segment: string; initials: string; summary: string } }) {
+function ClientCardFull({ client }: { client: Client }) {
   return (
-    <div className="w-[260px] rounded-2xl border border-primary/40 bg-gradient-primary p-5 text-primary-foreground shadow-glow">
-      <div className="flex items-center gap-3">
-        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-foreground/15 backdrop-blur font-display text-base font-semibold">
-          {data.initials}
+    <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+      <div className="flex items-center gap-4">
+        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-primary font-display text-lg font-semibold text-primary-foreground shadow-glow">
+          {client.initials}
         </div>
         <div className="min-w-0">
-          <div className="font-display text-base font-semibold leading-tight">{data.name}</div>
-          <div className="text-[11px] opacity-80">{data.segment}</div>
+          <h3 className="font-display text-xl font-semibold leading-tight text-foreground">{client.name}</h3>
+          <p className="mt-0.5 text-sm text-muted-foreground">{client.id} · {client.segment}</p>
         </div>
       </div>
-      {data.summary && (
-        <p className="mt-3 border-t border-primary-foreground/20 pt-3 text-[11px] leading-relaxed opacity-90">
-          {data.summary}
-        </p>
-      )}
+
+      <div className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-primary/30 bg-primary/5 px-4 py-3 text-sm font-medium text-primary">
+        <Network className="h-4 w-4" /> Synthèse AI · Fiche 360°
+      </div>
+
+      <dl className="mt-6 space-y-3.5 text-sm">
+        <Row icon={<Briefcase className="h-4 w-4" />} label="AUM" value={client.aum} />
+        <Row icon={<Tag className="h-4 w-4" />} label="Profil de risque" value={client.riskProfile} />
+        <Row icon={<Calendar className="h-4 w-4" />} label="Client depuis" value={client.joined} />
+        <Row icon={<Mail className="h-4 w-4" />} label="Email" value={client.email} />
+        <Row icon={<Phone className="h-4 w-4" />} label="Téléphone" value={client.phone} />
+      </dl>
+
+      <div className="mt-5 flex flex-wrap gap-2">
+        {client.tags.map((t) => (
+          <span key={t} className="rounded-full bg-accent px-3 py-1 text-xs font-medium text-accent-foreground">{t}</span>
+        ))}
+      </div>
+
+      <div className="mt-5 border-t border-border pt-4">
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Notes existantes</p>
+        <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
+          {client.notes.map((n, i) => (<li key={i}>· {n}</li>))}
+        </ul>
+      </div>
     </div>
   );
 }
 
-function BranchNode({ data }: { data: { branch: Branch } }) {
-  const s = TONE_STYLES[data.branch.tone];
+function Row({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className={`w-[230px] rounded-xl border ${s.border} ${s.bg} p-3.5 shadow-sm backdrop-blur`}>
-      <div className="mb-2 flex items-center gap-2">
+    <div className="flex items-center justify-between gap-2">
+      <span className="flex items-center gap-1.5 text-muted-foreground">{icon}{label}</span>
+      <span className="font-medium text-foreground">{value}</span>
+    </div>
+  );
+}
+
+function BranchCard({ branch, index }: { branch: Branch; index: number }) {
+  const s = TONE_STYLES[branch.tone];
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10, scale: 0.96 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ delay: index * 0.06, duration: 0.3 }}
+      className={`rounded-xl border ${s.border} ${s.bg} p-4 shadow-sm`}
+    >
+      <div className="mb-2.5 flex items-center gap-2">
         <span className={`h-2 w-2 rounded-full ${s.dot}`} />
-        <h4 className={`text-[11px] font-semibold uppercase tracking-wider ${s.label}`}>{data.branch.title}</h4>
+        <h4 className={`text-[11px] font-semibold uppercase tracking-wider ${s.label}`}>{branch.title}</h4>
       </div>
       <ul className="space-y-1.5">
-        {data.branch.points.map((p, i) => (
-          <li key={i} className="flex gap-1.5 text-[11px] leading-snug text-foreground">
+        {branch.points.map((p, i) => (
+          <li key={i} className="flex gap-1.5 text-xs leading-snug text-foreground">
             <span className="text-muted-foreground">·</span>
             <span>{p}</span>
           </li>
         ))}
       </ul>
-    </div>
+    </motion.div>
   );
-}
-
-const nodeTypes = { client: ClientNode, branch: BranchNode };
-
-function buildGraph(client: Client, mindmap: MindmapData): { nodes: Node[]; edges: Edge[] } {
-  const cx = 0, cy = 0;
-  const nodes: Node[] = [
-    {
-      id: "client",
-      type: "client",
-      position: { x: cx, y: cy },
-      data: { name: client.name, segment: client.segment, initials: client.initials, summary: mindmap.summary },
-      draggable: true,
-    },
-  ];
-  const edges: Edge[] = [];
-  const n = mindmap.branches.length;
-  const radius = 360;
-
-  mindmap.branches.forEach((b, i) => {
-    const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
-    const x = cx + Math.cos(angle) * radius;
-    const y = cy + Math.sin(angle) * radius;
-    const id = `b-${i}`;
-    nodes.push({
-      id,
-      type: "branch",
-      position: { x, y },
-      data: { branch: b },
-      draggable: true,
-    });
-    const tone = TONE_STYLES[b.tone].dot.replace("bg-", "");
-    const colorMap: Record<string, string> = {
-      success: "hsl(var(--success, 142 71% 45%))",
-      primary: "hsl(var(--primary))",
-      "muted-foreground": "hsl(var(--muted-foreground))",
-      warning: "hsl(var(--warning, 38 92% 50%))",
-      destructive: "hsl(var(--destructive))",
-    };
-    edges.push({
-      id: `e-${i}`,
-      source: "client",
-      target: id,
-      type: "smoothstep",
-      animated: b.tone === "risk" || b.tone === "warning",
-      style: { stroke: colorMap[tone] ?? "hsl(var(--border))", strokeWidth: 1.5 },
-      markerEnd: { type: MarkerType.ArrowClosed },
-    });
-  });
-
-  return { nodes, edges };
 }
 
 export function ClientMindmapModal({
@@ -150,8 +131,6 @@ export function ClientMindmapModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  const graph = useMemo(() => (data ? buildGraph(client, data) : { nodes: [], edges: [] }), [data, client]);
-
   return (
     <AnimatePresence>
       {open && (
@@ -170,6 +149,7 @@ export function ClientMindmapModal({
             className="relative flex h-[88vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Header */}
             <div className="flex items-center justify-between border-b border-border bg-surface/80 px-5 py-3 backdrop-blur">
               <div className="flex items-center gap-2.5">
                 <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/15 text-primary">
@@ -202,7 +182,15 @@ export function ClientMindmapModal({
               </div>
             </div>
 
-            <div className="relative flex-1 bg-background">
+            {/* Body — dotted bg, two columns: client card | mindmap word cluster */}
+            <div
+              className="relative flex-1 overflow-y-auto"
+              style={{
+                backgroundImage: "radial-gradient(circle, hsl(var(--border) / 0.6) 1px, transparent 1px)",
+                backgroundSize: "16px 16px",
+                backgroundColor: "hsl(var(--background))",
+              }}
+            >
               {loading && !data && (
                 <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-background/80 backdrop-blur">
                   <Loader2 className="h-6 w-6 animate-spin text-primary" />
@@ -217,21 +205,35 @@ export function ClientMindmapModal({
                   </button>
                 </div>
               )}
-              {data && (
-                <ReactFlow
-                  nodes={graph.nodes}
-                  edges={graph.edges}
-                  nodeTypes={nodeTypes}
-                  fitView
-                  fitViewOptions={{ padding: 0.2 }}
-                  minZoom={0.3}
-                  maxZoom={1.5}
-                  proOptions={{ hideAttribution: true }}
-                >
-                  <Background gap={24} size={1} color="hsl(var(--border))" />
-                  <Controls showInteractive={false} className="!border-border !bg-card !shadow-sm" />
-                </ReactFlow>
-              )}
+
+              <div className="grid gap-6 p-6 lg:grid-cols-[360px_minmax(0,1fr)]">
+                {/* Left — Client card */}
+                <div>
+                  <ClientCardFull client={client} />
+                </div>
+
+                {/* Right — Mindmap as floating word-clusters (no lines) */}
+                <div className="min-h-full">
+                  {data && (
+                    <>
+                      {data.summary && (
+                        <motion.p
+                          initial={{ opacity: 0, y: 6 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="mb-5 rounded-xl border border-primary/20 bg-primary/5 p-4 text-sm italic leading-relaxed text-foreground"
+                        >
+                          « {data.summary} »
+                        </motion.p>
+                      )}
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        {data.branches.map((b, i) => (
+                          <BranchCard key={`${b.title}-${i}`} branch={b} index={i} />
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
             </div>
           </motion.div>
         </motion.div>
