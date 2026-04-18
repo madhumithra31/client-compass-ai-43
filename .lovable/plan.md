@@ -1,75 +1,66 @@
 
-
 ## Current state
 
-- `/dashboard` already exists but is the "Cockpit Manager" — it shows live meetings from `otherLiveMeetings` (4 fake parallel sessions). It is NOT analytics over the client portfolio.
-- We have 10 fully-modeled clients in `clients` (`src/lib/mock-data.ts`), each with: `aum`, `netWorth`, `totalAssets`, `totalDebt`, `annualRevenue`, `tmi`, `equipmentScore`, `segment`, `archetype`, `rm`, `agency`, `riskProfile`, `lifeStage`, `age`, `contracts[]` (with `family` + `balance` + `allocFondsEuro`/`allocUC` + `positions[]` carrying `assetClass`/`geo`/`sector`), `projects[]`, `recentEvents[]`.
-- That's plenty for a real portfolio-level dashboard — no backend, no new data needed.
+4 routes (`/`, `/meeting`, `/dashboard`, `/portfolio`), but no global nav. Each page has ad-hoc "← Accueil" / "Portfolio" header links added piecemeal. The user has to hand-edit the URL.
 
-## Proposal — new `/portfolio` route: "Portfolio Overview"
+## Proposal — global top navigation bar
 
-A separate route (keeps `/dashboard` live-meeting cockpit intact). New file `src/routes/portfolio.tsx`. Add a third entry on the home page next to "Démarrer un rendez-vous" / "Cockpit Manager".
+Add a single shared `AppNav` component rendered in `__root.tsx` so it appears on every route automatically. Horizontal top bar — fits the existing dashboard aesthetic better than a sidebar (which would compete with the meeting page's already-dense 3-column layout).
 
-### Layout (single scrollable page, max-w-7xl)
+### Design
 
-**1. Hero KPI strip (6 tiles)** — aggregate across all clients
-- Total AUM (sum `totalAssets`)
-- Total Net Worth (sum `netWorth`)
-- Active Clients (count) + avg seniority
-- Avg Equipment Score /10 (with progress bar)
-- Total Debt under management (sum `totalDebt`)
-- High-priority projects in pipeline (count where `priority === "Haute"`) + total target €
+A slim sticky header (h-14) at the top of every page:
 
-**2. Two-column row — segmentation**
-- **Donut: Clients by Segment** (Banque de Détail vs Premier vs ...) — count + % AUM share
-- **Donut: Clients by Risk Profile** (Conservative / Balanced / Dynamic / Aggressive)
+```text
+[Logo BNP]   Accueil · Rendez-vous · Cockpit Manager · Portefeuille      [● Live]
+```
 
-**3. Asset allocation aggregated**
-- **Stacked horizontal bar**: aggregate balance by contract `family` (Compte, Épargne réglementée, Assurance-vie, PER, Crédit, etc.) with €amount + % labels
-- **Donut: Aggregate position breakdown** by `assetClass` (Fonds €, Actions, Obligations, Immobilier...) computed from all `positions[]`
+- Left: the existing `Logo` component, clickable → `/`
+- Center/left: 4 `<Link>` items using TanStack `activeProps` for the highlighted state (underline + bold + primary color)
+- Right: the small "All systems operational" pulse dot already used on the home page
 
-**4. Top tables (two side-by-side)**
-- **Top 5 clients by AUM** — name, segment, RM, AUM, equipment score, link to `/meeting?client=...`
-- **Top RMs by AUM under management** — RM name, # clients, total AUM, avg equipment score
+Sticky (`sticky top-0 z-40`), `backdrop-blur`, `border-b` — matches the existing surface look.
 
-**5. Geographic & demographic breakdown**
-- Bar chart: clients by `agency`
-- Bar chart: clients by `lifeStage` (Début de carrière, Vie de famille, Préparation retraite, Retraite, …)
+### Implementation
 
-**6. Activity & opportunity signals (computed across portfolio)**
-- Recent activity feed: last 8 events across ALL clients (sorted by date desc), color-coded by `criticality`, with client avatar + link
-- Opportunity panel — counts of:
-  - Clients with `tmi >= 30` and no PER contract (tax optimization candidates)
-  - Clients with `equipmentScore <= 4` (under-equipped)
-  - Contracts maturing within 12 months (sum balance)
-  - Saturated Livret A holders (`balance / ceiling > 0.85`)
+1. **New `src/components/AppNav.tsx`** — the bar described above, ~50 lines, uses `Link` from `@tanstack/react-router` with `activeProps={{ className: "text-primary font-semibold" }}` and `activeOptions={{ exact: true }}` for `/`.
 
-All charts are **inline SVG / divs with Tailwind** (donuts as SVG arcs, bars as flex divs) — same pattern as the existing meeting page, no new charting library. We already have `framer-motion` and `lucide-react`.
+2. **`src/routes/__root.tsx`** — render `<AppNav />` above `<Outlet />` in `RootComponent`. That's it for global wiring.
 
-### Computation
+3. **Per-page header cleanup** — remove the now-duplicate top headers from:
+   - `src/routes/index.tsx` — drop the small `<header>` (Logo + status pill); keep the hero section.
+   - `src/routes/meeting.tsx` — drop the `← Accueil` / Portfolio link bar at the top.
+   - `src/routes/dashboard.tsx` — same cleanup.
+   - `src/routes/portfolio.tsx` — same cleanup.
 
-A single `useMemo` at the top of the component computes all aggregates from `clientList` once. Pure helpers (`groupBy`, `sumBy`, `topN`) defined locally in the file. ~150 lines of helpers, ~400 lines of JSX.
+   This avoids two stacked headers and gives every page back ~60px of vertical room.
 
-### Navigation wiring
+4. **Hide on the meeting "live" view? — No.** Keeping it visible everywhere is simpler and more useful (advisor can jump back to portfolio mid-meeting). The bar is only 56px tall.
 
-- Add `/portfolio` link in `src/routes/index.tsx` hero section as a third button "Vue Portefeuille".
-- Add a "Portfolio" link in the `/meeting` and `/dashboard` headers next to "← Accueil" so the manager can hop between live cockpit and aggregate view.
-- Each client row in the Top Clients table links to `/meeting` (we already do that pattern in `dashboard.tsx`).
+### Naming on the nav
 
-### Naming
+- "Accueil" → `/`
+- "Rendez-vous" → `/meeting`
+- "Cockpit" → `/dashboard`
+- "Portefeuille" → `/portfolio`
 
-I'll call the route **"Portfolio Overview"** in English to match "Ask AI" / your recent direction, with French sub-labels for tile copy to stay consistent with the rest of the app. Tell me if you'd rather it be fully French ("Vue Portefeuille") — easy swap.
+(Short French labels to match the rest of the UI.)
+
+### Mobile
+
+Below `md` the link row collapses to an icon-only row (Home / Mic / BarChart3 / PieChart icons from lucide), still horizontal — no hamburger needed for 4 items.
 
 ## Files
 
-- `src/routes/portfolio.tsx` — NEW (~550 lines, single file, no new deps)
-- `src/routes/index.tsx` — add a third CTA button to the hero
-- `src/routes/meeting.tsx` + `src/routes/dashboard.tsx` — add a header link to `/portfolio`
+- `src/components/AppNav.tsx` — NEW
+- `src/routes/__root.tsx` — add `<AppNav />` in `RootComponent`
+- `src/routes/index.tsx` — remove old header
+- `src/routes/meeting.tsx` — remove old header link bar
+- `src/routes/dashboard.tsx` — remove old header link bar
+- `src/routes/portfolio.tsx` — remove old header link bar
 
 ## Out of scope
 
-- Filters / date range pickers (read-only snapshot for now — can add a "by RM" filter later if you want).
-- Drill-down pages per segment / per RM (would be a follow-up).
-- Real backend aggregation (everything reads from the in-memory mock — same model as the rest of the app).
-- Touching the existing `/dashboard` live-meeting cockpit — kept as-is so we don't lose the supervisor flow.
-
+- Sidebar layout (rejected — meeting page is already 3 columns wide).
+- Auth/user menu, notifications, search — none exist yet.
+- Breadcrumbs — overkill for 4 flat routes.
