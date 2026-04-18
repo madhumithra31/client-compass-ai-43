@@ -9,10 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as MeetingRouteImport } from './routes/meeting'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 
+const PortfolioRoute = PortfolioRouteImport.update({
+  id: '/portfolio',
+  path: '/portfolio',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MeetingRoute = MeetingRouteImport.update({
   id: '/meeting',
   path: '/meeting',
@@ -33,34 +39,45 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/meeting': typeof MeetingRoute
+  '/portfolio': typeof PortfolioRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/meeting': typeof MeetingRoute
+  '/portfolio': typeof PortfolioRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/meeting': typeof MeetingRoute
+  '/portfolio': typeof PortfolioRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/meeting'
+  fullPaths: '/' | '/dashboard' | '/meeting' | '/portfolio'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/meeting'
-  id: '__root__' | '/' | '/dashboard' | '/meeting'
+  to: '/' | '/dashboard' | '/meeting' | '/portfolio'
+  id: '__root__' | '/' | '/dashboard' | '/meeting' | '/portfolio'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRoute
   MeetingRoute: typeof MeetingRoute
+  PortfolioRoute: typeof PortfolioRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/portfolio': {
+      id: '/portfolio'
+      path: '/portfolio'
+      fullPath: '/portfolio'
+      preLoaderRoute: typeof PortfolioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/meeting': {
       id: '/meeting'
       path: '/meeting'
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRoute,
   MeetingRoute: MeetingRoute,
+  PortfolioRoute: PortfolioRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

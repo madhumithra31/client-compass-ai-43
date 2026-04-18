@@ -66,6 +66,12 @@ function Index() {
               >
                 Cockpit Manager
               </Link>
+              <Link
+                to="/portfolio"
+                className="inline-flex items-center gap-2 rounded-md border border-white/30 bg-white/5 px-6 py-3 text-sm font-semibold text-white backdrop-blur transition-colors hover:bg-white/10"
+              >
+                Vue Portefeuille
+              </Link>
             </div>
           </motion.div>
         </div>

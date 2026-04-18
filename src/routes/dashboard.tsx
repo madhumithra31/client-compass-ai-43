@@ -30,7 +30,10 @@ function Dashboard() {
               · Cockpit Manager
             </span>
           </div>
-          <Link to="/" className="text-xs text-muted-foreground hover:text-foreground">← Accueil</Link>
+          <nav className="flex items-center gap-4 text-xs">
+            <Link to="/portfolio" className="text-muted-foreground hover:text-foreground">Portfolio</Link>
+            <Link to="/" className="text-muted-foreground hover:text-foreground">← Accueil</Link>
+          </nav>
         </div>
       </header>
 
